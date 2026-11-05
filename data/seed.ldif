@@ -1,0 +1,141 @@
+dn: dc=example,dc=com
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: Example Sp. z o.o.
+
+dn: uid=admin,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: admin
+cn: Administrator Systemu
+sn: Systemu
+mail: admin@example.com
+title: Administrator
+departmentNumber: IT
+employeeType: restricted
+description: FLAG{ldapi_login_bypass_admin}
+userPassword: nieDoZgadniecia-7Qx9-Lm2v-Rt4k
+
+dn: cn=svc-webapp,dc=example,dc=com
+objectClass: top
+objectClass: organizationalRole
+objectClass: simpleSecurityObject
+cn: svc-webapp
+description: Konto serwisowe aplikacji, tylko do wyszukiwania
+userPassword: svc-webapp-lab-only
+
+dn: ou=people,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=jkowalski,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: jkowalski
+cn: Jan Kowalski
+sn: Kowalski
+mail: jkowalski@example.com
+title: Programista
+departmentNumber: IT
+employeeType: public
+telephoneNumber: +48 500 000 101
+userPassword: Kowalski-Lab-101
+
+dn: uid=anowak,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: anowak
+cn: Anna Nowak
+sn: Nowak
+mail: anowak@example.com
+title: Specjalistka HR
+departmentNumber: HR
+employeeType: public
+telephoneNumber: +48 500 000 102
+userPassword: Nowak-Lab-102
+
+dn: uid=pwisniewski,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: pwisniewski
+cn: Piotr Wisniewski
+sn: Wisniewski
+mail: pwisniewski@example.com
+title: Analityk finansowy
+departmentNumber: Finanse
+employeeType: public
+telephoneNumber: +48 500 000 103
+userPassword: Wisniewski-Lab-103
+
+dn: uid=mzielinska,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: mzielinska
+cn: Maria Zielinska
+sn: Zielinska
+mail: mzielinska@example.com
+title: Kierowniczka sprzedazy
+departmentNumber: Sprzedaz
+employeeType: public
+telephoneNumber: +48 500 000 104
+userPassword: Zielinska-Lab-104
+
+dn: uid=tkaminski,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: tkaminski
+cn: Tomasz Kaminski
+sn: Kaminski
+mail: tkaminski@example.com
+title: Administrator sieci
+departmentNumber: IT
+employeeType: public
+telephoneNumber: +48 500 000 105
+userPassword: Kaminski-Lab-105
+
+dn: uid=elewandowska,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: elewandowska
+cn: Ewa Lewandowska
+sn: Lewandowska
+mail: elewandowska@example.com
+title: Prezeska zarzadu
+departmentNumber: Zarzad
+employeeType: restricted
+telephoneNumber: +48 500 000 901
+description: Numer prywatny, nie publikowac w ksiazce adresowej
+userPassword: Lewandowska-Lab-901
+
+dn: uid=kdabrowski,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: kdabrowski
+cn: Krzysztof Dabrowski
+sn: Dabrowski
+mail: kdabrowski@example.com
+title: Oficer bezpieczenstwa
+departmentNumber: Bezpieczenstwo
+employeeType: restricted
+telephoneNumber: +48 500 000 902
+description: FLAG{ldapi_wildcard_directory_leak}
+userPassword: Dabrowski-Lab-902

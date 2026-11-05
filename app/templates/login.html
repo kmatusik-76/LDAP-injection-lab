@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Logowanie - Lab LDAP injection{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Logowanie</h2>
+    <form method="post" action="{{ url_for('main.login') }}">
+      <label for="username">Login (uid)</label>
+      <input type="text" id="username" name="username" autofocus autocomplete="off"
+             value="{{ request.form.username or '' }}">
+      <label for="password">Haslo</label>
+      <input type="password" id="password" name="password" autocomplete="off">
+      <button class="btn" type="submit">Zaloguj</button>
+    </form>
+    <p class="hint">Zadanie 1: zaloguj sie jako <code>admin</code> nie znajac jego hasla.</p>
+  </div>
+
+  {% if result %}
+  <div class="card">
+    {% if result.ok %}
+      <p class="msg ok">{{ result.message }}</p>
+    {% else %}
+      <p class="msg err">{{ result.message }}</p>
+    {% endif %}
+    <label>Filtr LDAP wyslany do serwera ({{ result.mode }}):</label>
+    <div class="filter">{{ result.filter_used }}</div>
+  </div>
+  {% endif %}
+{% endblock %}

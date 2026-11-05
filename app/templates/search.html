@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Wyszukiwarka - Lab LDAP injection{% endblock %}
+{% block content %}
+  {% if current_user and (current_user.description or '').startswith('FLAG{') %}
+  <div class="card">
+    <p class="msg ok">Zalogowano jako {{ current_user.cn }} ({{ current_user.dn }})</p>
+    <p>Atrybut <code>description</code> tego konta: <span class="flag">{{ current_user.description }}</span></p>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h2>Wyszukiwarka pracownikow</h2>
+    <form method="get" action="{{ url_for('main.search') }}">
+      <label for="q">Szukaj po nazwisku / mailu / loginie</label>
+      <input type="text" id="q" name="q" autofocus autocomplete="off" value="{{ query }}">
+      <button class="btn" type="submit">Szukaj</button>
+    </form>
+    <p class="hint">Zadanie 2: wyswietl pracownikow oznaczonych jako niepubliczni (<code>restricted</code>).</p>
+  </div>
+
+  {% if result %}
+  <div class="card">
+    <label>Filtr LDAP wyslany do serwera ({{ result.mode }}):</label>
+    <div class="filter">{{ result.filter_used }}</div>
+    <p class="hint" style="margin-top:.6rem">{{ result.message }}</p>
+
+    {% if result.entries %}
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>cn</th><th>mail</th><th>dzial</th><th>typ</th><th>telefon</th><th>description</th></tr>
+      </thead>
+      <tbody>
+        {% for e in result.entries %}
+        <tr class="{{ 'restricted' if e.employeeType == 'restricted' else '' }}">
+          <td>{{ e.cn or '' }}</td>
+          <td>{{ e.mail or '' }}</td>
+          <td>{{ e.departmentNumber or '' }}</td>
+          <td>
+            {% if e.employeeType %}<span class="badge {{ e.employeeType }}">{{ e.employeeType }}</span>{% endif %}
+          </td>
+          <td>{{ e.telephoneNumber or '' }}</td>
+          <td>
+            {% if (e.description or '').startswith('FLAG{') %}
+              <span class="flag">{{ e.description }}</span>
+            {% else %}{{ e.description or '' }}{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endblock %}

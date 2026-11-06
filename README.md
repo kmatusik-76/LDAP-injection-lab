@@ -70,3 +70,29 @@ LDAP-injection-lab/
 │   └── templates/          # widoki HTML (Jinja2)
 └── tests/                  # testy silnika filtrów i scenariuszy
 ```
+
+## Struktura katalogu LDAP (DIT)
+
+```
+dc=example,dc=com                      # korzeń organizacji (Example Sp. z o.o.)
+├── uid=admin                          # konto administratora
+├── cn=svc-webapp                      # konto serwisowe aplikacji
+│
+├── ou=people                         # pracownicy (książka adresowa)
+│   ├── uid=jkowalski    Jan Kowalski
+│   ├── uid=anowak       Anna Nowak
+│   ├── uid=pwisniewski  Piotr Wiśniewski
+│   ├── uid=mzielinska   Maria Zielińska
+│   ├── uid=tkaminski    Tomasz Kamiński
+│   ├── uid=elewandowska Ewa Lewandowska
+│   ├── uid=kdabrowski   Krzysztof Dąbrowski
+│   └── uid=aczarnecki   Adam Czarnecki
+│
+└── ou=assets                         # zasoby / urządzenia sieciowe
+    ├── cn=drukarka-hr
+    └── cn=serwer-vpn
+```
+
+Katalog dzieli się na dwa poddrzewa: `ou=people` (konta pracowników)
+i `ou=assets` (urządzenia). Pod korzeniem znajdują się też konto
+administratora i konto serwisowe aplikacji.

@@ -1,0 +1,139 @@
+/* Minimalny, czytelny styl. Wyglad dopracujemy pozniej - teraz liczy sie
+   przejrzystosc interfejsu i widocznosc filtra LDAP. */
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  color: #1c1c1c;
+  background: #f4f5f7;
+  line-height: 1.5;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .6rem 1rem;
+  color: #fff;
+  flex-wrap: wrap;
+}
+.bar.vuln { background: #b4232a; }
+.bar.safe { background: #1f7a4d; }
+.bar form { margin: 0; }
+.bar button {
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .6);
+  padding: .3rem .7rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+nav {
+  display: flex;
+  gap: .25rem;
+  flex-wrap: wrap;
+  padding: .5rem 1rem;
+  background: #22262b;
+}
+nav a {
+  color: #d7dbe0;
+  text-decoration: none;
+  padding: .3rem .6rem;
+  border-radius: 4px;
+  font-size: .9rem;
+}
+nav a:hover { background: #343a41; color: #fff; }
+
+main { max-width: 900px; margin: 1.2rem auto; padding: 0 1rem; }
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e2e6;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+h1, h2, h3 { margin-top: 0; }
+.meta { color: #666; font-size: .85rem; }
+
+label { display: block; font-weight: 600; margin: .6rem 0 .2rem; }
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: .5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+.btn {
+  margin-top: .8rem;
+  padding: .5rem 1rem;
+  background: #2f5fdb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn:hover { background: #244bb0; }
+
+.filter-label { font-weight: 600; margin-bottom: .3rem; }
+.filter {
+  background: #0f1720;
+  color: #7ee787;
+  padding: .7rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.tree {
+  background: #f0f1f3;
+  padding: .7rem;
+  border-radius: 6px;
+  font-size: .85rem;
+}
+.base { color: #666; font-size: .85rem; margin: .4rem 0; }
+
+.msg { padding: .5rem .7rem; border-radius: 4px; font-weight: 600; }
+.msg.ok { background: #e3f6e9; color: #1f7a4d; }
+.msg.err { background: #fbe6e7; color: #b4232a; }
+
+.entry {
+  border: 1px solid #e0e2e6;
+  border-radius: 6px;
+  padding: .6rem .8rem;
+  margin-top: .8rem;
+}
+.entry .dn { font-family: ui-monospace, monospace; font-size: .85rem; color: #555; }
+.entry table { width: 100%; border-collapse: collapse; margin-top: .4rem; }
+.entry th {
+  text-align: left;
+  width: 180px;
+  vertical-align: top;
+  padding: .2rem .5rem;
+  color: #333;
+  font-family: ui-monospace, monospace;
+  font-size: .85rem;
+}
+.entry td { padding: .2rem .5rem; }
+
+.flag, .flag-inline {
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  color: #8a4b00;
+  background: #fff3d6;
+  padding: .1rem .4rem;
+  border-radius: 4px;
+}
+.flag { display: inline-block; margin: .4rem 0; }
+
+.scenario { padding: .6rem 0; border-top: 1px solid #eee; }
+.scenario:first-of-type { border-top: none; }
+
+details { margin-top: .6rem; }
+summary { cursor: pointer; font-weight: 600; }
+code { background: #eef0f3; padding: .1rem .3rem; border-radius: 3px; }
+.examples { font-family: ui-monospace, monospace; font-size: .85rem; }

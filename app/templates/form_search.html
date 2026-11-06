@@ -1,0 +1,5 @@
+<form method="get" action="{{ url_for(search_endpoint) }}">
+  <label for="q">{{ field_label }}</label>
+  <input type="text" id="q" name="q" autofocus autocomplete="off" value="{{ query }}">
+  <button class="btn" type="submit">Szukaj</button>
+</form>

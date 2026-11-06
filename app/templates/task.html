@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_result with context %}
+{% block title %}{{ scenario.title }}{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>{{ scenario.title }}</h2>
+    <p class="meta">Trudnosc: {{ scenario.difficulty }} &middot; Czas: {{ scenario.time }}</p>
+    <p><strong>Cel:</strong> {{ scenario.goal }}</p>
+    <details>
+      <summary>Podpowiedz</summary>
+      <p>{{ scenario.hint }}</p>
+    </details>
+  </div>
+
+  <div class="card">
+    {% include template_name %}
+  </div>
+
+  {% if result %}
+    {{ render_result(result) }}
+  {% endif %}
+{% endblock %}

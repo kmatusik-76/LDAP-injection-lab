@@ -1,1 +1,0 @@
-# dla pytestu, zeby dodal katalog glowny projektu do sys.path

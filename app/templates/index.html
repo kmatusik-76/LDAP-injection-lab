@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Start - Laboratorium LDAP injection{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1>Laboratorium LDAP injection</h1>
+    <p>
+      To srodowisko dydaktyczne pokazuje, dlaczego sklejanie zapytan LDAP
+      z niezaufanych danych jest niebezpieczne. Aplikacja ma celowe luki.
+      Pracuj w trybie <strong>PODATNY</strong>, zdobadz flagi, a potem przelacz
+      na <strong>BEZPIECZNY</strong> i sprawdz, ze te same ataki juz nie dzialaja.
+    </p>
+    <p>
+      Na kazdym ekranie pokazujemy dokladny <strong>filtr LDAP wyslany do
+      serwera</strong> oraz to, jak serwer go rozumie. To najlepsza podpowiedz.
+      Skladnie filtrow mozesz cwiczyc bez ryzyka w <a href="{{ url_for('main.console') }}">Konsoli LDAP</a>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Zadania</h2>
+    {% for s in scenarios %}
+      <div class="scenario">
+        <h3><a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a></h3>
+        <p class="meta">Trudnosc: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
+        <p>{{ s.goal }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

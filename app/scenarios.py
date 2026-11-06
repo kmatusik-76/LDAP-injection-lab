@@ -118,4 +118,4 @@ SCENARIOS: list[Scenario] = [
 ]
 
 SCENARIOS_BY_ENDPOINT: dict[str, Scenario] = {s.endpoint: s for s in SCENARIOS}
-ALL_FLAGS: dict[str, str] = {s.flag: s.title for s in SCENARIOS}
+SCENARIOS_BY_FLAG: dict[str, Scenario] = {s.flag: s for s in SCENARIOS}

@@ -9,7 +9,7 @@ from markupsafe import Markup, escape
 
 from .dit import build_tree
 from .ldap_filter import FilterError, describe, parse_filter
-from .scenarios import ALL_FLAGS, SCENARIOS, SCENARIOS_BY_ENDPOINT
+from .scenarios import SCENARIOS, SCENARIOS_BY_ENDPOINT, SCENARIOS_BY_FLAG
 
 bp = Blueprint("main", __name__)
 
@@ -30,6 +30,11 @@ def app_logic():
 
 def is_secure() -> bool:
     return bool(session.get("secure", False))
+
+
+def solved_ids() -> set[str]:
+    """Id zadań zaliczonych w tej sesji (poprawna flaga w "Sprawdź flagę")."""
+    return set(session.get("solved", []))
 
 
 def _local_path(target: str | None) -> str:
@@ -53,6 +58,7 @@ def inline_code(text: str) -> Markup:
 def inject_globals():
     return {
         "secure_mode": is_secure(),
+        "solved": solved_ids(),
         "scenarios": SCENARIOS,
         "explain_filter": _explain_filter,
     }
@@ -149,9 +155,12 @@ def flags():
     value = ""
     if request.method == "POST":
         value = request.form.get("flag", "").strip()
+        scenario = SCENARIOS_BY_FLAG.get(value)
+        if scenario:
+            session["solved"] = sorted(solved_ids() | {scenario.id})
         checked = {
             "value": value,
-            "valid": value in ALL_FLAGS,
-            "title": ALL_FLAGS.get(value),
+            "valid": scenario is not None,
+            "title": scenario.title if scenario else None,
         }
     return render_template("flags.html", checked=checked, value=value)

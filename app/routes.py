@@ -59,6 +59,7 @@ def inject_globals():
     return {
         "secure_mode": is_secure(),
         "solved": solved_ids(),
+        "all_solved": solved_ids() >= {s.id for s in SCENARIOS},
         "scenarios": SCENARIOS,
         "explain_filter": _explain_filter,
     }
@@ -153,14 +154,20 @@ def recovery():
 def flags():
     checked = None
     value = ""
+    just_completed = False
     if request.method == "POST":
         value = request.form.get("flag", "").strip()
         scenario = SCENARIOS_BY_FLAG.get(value)
         if scenario:
-            session["solved"] = sorted(solved_ids() | {scenario.id})
+            before = solved_ids()
+            session["solved"] = sorted(before | {scenario.id})
+            # Konfetti tylko w chwili zdobycia ostatniej brakującej flagi.
+            just_completed = (len(before) < len(SCENARIOS)
+                              and len(session["solved"]) == len(SCENARIOS))
         checked = {
             "value": value,
             "valid": scenario is not None,
             "title": scenario.title if scenario else None,
         }
-    return render_template("flags.html", checked=checked, value=value)
+    return render_template("flags.html", checked=checked, value=value,
+                           just_completed=just_completed)

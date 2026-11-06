@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Sprawdź flagę{% endblock %}
 {% block content %}
+  {% if all_solved %}{% include "congrats.html" %}{% endif %}
   <div class="card">
     <h2>Sprawdź flagę</h2>
     <p>Wklej zdobytą flagę w formacie <code>FLAG{...}</code>, aby potwierdzić rozwiązanie zadania.</p>
@@ -18,4 +19,9 @@
       {% endif %}
     {% endif %}
   </div>
+{% endblock %}
+{% block scripts %}
+  {% if just_completed %}
+    <script src="{{ url_for('static', filename='confetti.js') }}"></script>
+  {% endif %}
 {% endblock %}

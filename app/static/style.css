@@ -274,3 +274,12 @@ main.wide { max-width: 1250px; }
 
 .legend td { padding: .2rem .6rem .2rem 0; vertical-align: middle; }
 .dit-node .dit-kind { font-size: .66rem; }
+
+/* Gratulacje po ukończeniu wszystkich zadań. */
+.congrats {
+  text-align: center;
+  background: linear-gradient(135deg, #e3f6e9, #fff8e1);
+  border-color: #b5e0c4;
+}
+.congrats h2 { color: #1f7a4d; margin-bottom: .4rem; }
+.congrats-trophy { font-size: 3rem; line-height: 1; margin-bottom: .4rem; }

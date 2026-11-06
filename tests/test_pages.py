@@ -99,3 +99,24 @@ def test_all_flags_solve_all_tasks(client):
     html = client.get("/").get_data(as_text=True)
     assert "Zaliczono 4 z 4." in html
     assert html.count('class="solved"') == len(SCENARIOS)
+
+
+def test_congrats_and_confetti_after_last_flag(client):
+    for s in SCENARIOS[:-1]:
+        html = client.post("/flags", data={"flag": s.flag}).get_data(as_text=True)
+        assert "CTF ukończony" not in html
+        assert "confetti.js" not in html
+
+    html = client.post("/flags", data={"flag": SCENARIOS[-1].flag}).get_data(as_text=True)
+    assert "CTF ukończony" in html
+    assert "confetti.js" in html
+
+    # Gratulacje zostają na stronie głównej, ale konfetti już się nie powtarza.
+    assert "CTF ukończony" in client.get("/").get_data(as_text=True)
+    html = client.post("/flags", data={"flag": SCENARIOS[0].flag}).get_data(as_text=True)
+    assert "CTF ukończony" in html
+    assert "confetti.js" not in html
+
+
+def test_confetti_script_is_served(client):
+    assert client.get("/static/confetti.js").status_code == 200

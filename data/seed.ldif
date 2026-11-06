@@ -141,15 +141,15 @@ employeeType: restricted
 telephoneNumber: +48 500 000 901
 description: Numer prywatny, nie publikowac w ksiazce adresowej
 
-dn: uid=kdabrowski,ou=people,dc=example,dc=com
+dn: uid=dwojcik,ou=people,dc=example,dc=com
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-uid: kdabrowski
-cn: Krzysztof Dabrowski
-sn: Dabrowski
-mail: kdabrowski@example.com
+uid: dwojcik
+cn: Dawid Wojcik
+sn: Wojcik
+mail: dwojcik@example.com
 title: Oficer bezpieczenstwa
 departmentNumber: Bezpieczenstwo
 employeeType: restricted

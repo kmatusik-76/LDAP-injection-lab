@@ -75,23 +75,20 @@ SCENARIOS: list[Scenario] = [
         title="Zadanie 3: wstrzyknięcie własnego warunku",
         difficulty="średnie",
         goal="W katalogu zasobów jest ukryty rekord z flagą. Nie ma on nazwy "
-             "(`cn`) ani działu (`ou`), więc wpisanie czegokolwiek w wyszukiwarkę "
+             "(`cn`) ani działu (`ou`), więc wpisanie (`*`) w wyszukiwarkę "
              "go nie znajdzie. Twoim zadaniem jest tak zmanipulować zapytanie, "
              "żeby wyszukiwarka zwróciła ten rekord.",
         proof="W wynikach pojawi się zasób z flagą, choć nie podałeś jego nazwy.",
-        vulnerability="Wyszukiwarka skleja filtr `(|(cn=FRAZA)(ou=FRAZA))`. Skoro "
-                      "ukryty rekord nie ma `cn` ani `ou`, sama gwiazdka go nie "
-                      "znajdzie.",
+        vulnerability="Wyszukiwarka skleja filtr `(|(cn=FRAZA)(ou=FRAZA))` używając wpisanej frazy "
+                      "w takiej postaci, w jakiej ją podasz. ",
         hints=(
             "Twój tekst trafia w miejsce `FRAZA` w `(cn=FRAZA)`. Zastanów się, co "
-            "się stanie, jeśli w środku wpiszesz `)` — domkniesz warunek `cn` "
-            "wcześniej, niż chciał programista, i zrobisz sobie miejsce na własny "
-            "`(atrybut=*)`. Po każdej próbie sprawdzaj podgląd filtra i pilnuj, "
-            "żeby nawiasy się zgadzały.",
+            "się stanie, jeśli w środku wpiszesz `)`, czyli domkniesz warunek `cn` "
+            "wcześniej, niż chciał programista.",
         ),
         secure_note="Escapowanie zamyka drogę do wstrzyknięcia nawiasu, "
-                    "a dodatkowy warunek `objectClass=device` trzyma wyniki "
-                    "w ryzach.",
+                    "a dodatkowy warunek `objectClass=device` ogranicza wyniki tylko  do "
+                    "tej klasy.",
         flag="FLAG{ldap_or_attribute_injection}",
     ),
     Scenario(
@@ -101,17 +98,12 @@ SCENARIOS: list[Scenario] = [
         title="Zadanie 4: odczyt na ślepo (blind)",
         difficulty="trudne",
         goal="Formularz odzyskiwania konta mówi tylko „konto istnieje” albo "
-             "„nie istnieje” – nigdy nie pokazuje PIN-u. Mimo to da się ten "
+             "„nie istnieje” - nigdy nie pokazuje PIN-u. Mimo to da się ten "
              "4-cyfrowy PIN konta `aczarnecki` odgadnąć cyfra po cyfrze. "
-             "Gdy już go znasz, wpisz go w całości, żeby odsłonić flagę.",
+             "Gdy już go znasz, wpisz go w całości, żeby znaleźć flagę.",
         proof="Po wpisaniu pełnego, poprawnego PIN-u zobaczysz flagę w danych konta.",
         vulnerability="Filtr to `(&(uid=LOGIN)(recoveryPin=PIN))`, a PIN trafia "
-                      "do niego bez obróbki – więc gwiazdka działa jak dopasowanie "
-                      "fragmentu. Wpisując `5*` pytasz serwer: „czy PIN zaczyna się "
-                      "od 5?”. Odpowiedź „konto istnieje / nie istnieje” zdradza Ci "
-                      "to po jednej cyfrze naraz. Tak właśnie wygląda atak „na "
-                      "ślepo” (blind): serwer wycieka tajną wartość przez samo "
-                      "tak/nie, choć nigdy jej nie wyświetla.",
+                      "do niego bez obróbki, więc gwiazdka działa jak dopasowanie.",
         hints=(
             "Sprawdzaj PIN prefiksem: wpisuj `0*`, `1*`, `2*`... aż formularz "
             "potwierdzi, że konto istnieje. Tak poznasz pierwszą cyfrę.",
@@ -120,9 +112,7 @@ SCENARIOS: list[Scenario] = [
             "bez gwiazdki.",
         ),
         secure_note="Escapowanie blokuje dopasowanie prefiksem, a odpowiedź jest "
-                    "zawsze taka sama i ogólna. Przy atakach na ślepo samo "
-                    "escapowanie to jednak za mało: potrzebne są też ogólne "
-                    "komunikaty i ograniczenie liczby prób.",
+                    "zawsze taka sama i ogólna.",
         flag="FLAG{ldap_blind_pin_extraction}",
     ),
 ]

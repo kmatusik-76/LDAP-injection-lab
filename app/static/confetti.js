@@ -8,9 +8,12 @@
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   var COLORS = ["#1f7a4d", "#2f5fdb", "#f2b705", "#b4232a", "#5b3cc4", "#24a0ed"];
-  var COUNT = 220;
-  var DURATION_MS = 4500;   // jak długo spadają nowe kawałki
-  var FADE_MS = 1200;       // wygaszanie na końcu
+  var BURSTS = 4;              // liczba wystrzałów
+  var BURST_INTERVAL_MS = 800; // odstęp między wystrzałami
+  var PIECES_PER_BURST = 160;  // kawałków na wystrzał (po połowie z każdego rogu)
+  // Po ostatnim wystrzale dajemy kawałkom czas na opadnięcie, potem wygaszamy.
+  var DURATION_MS = (BURSTS - 1) * BURST_INTERVAL_MS + 3500;
+  var FADE_MS = 1200;
 
   var canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
@@ -45,7 +48,12 @@
   }
 
   var pieces = [];
-  for (var i = 0; i < COUNT; i++) pieces.push(makePiece(i % 2 === 0));
+  var fired = 0;
+
+  function fireBurst() {
+    for (var i = 0; i < PIECES_PER_BURST; i++) pieces.push(makePiece(i % 2 === 0));
+    fired++;
+  }
 
   var start = performance.now();
   var last = start;
@@ -56,6 +64,10 @@
     // tę samą prędkość na monitorach 60 Hz i 144 Hz. 1 = jedna klatka 60 Hz.
     var dt = Math.min((now - last) / (1000 / 60), 3);
     last = now;
+
+    // Kolejny wystrzał, gdy minął jego czas (pierwszy od razu).
+    while (fired < BURSTS && elapsed >= fired * BURST_INTERVAL_MS) fireBurst();
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = elapsed > DURATION_MS
       ? Math.max(0, 1 - (elapsed - DURATION_MS) / FADE_MS)
@@ -79,7 +91,11 @@
       ctx.restore();
     }
 
-    if (elapsed < DURATION_MS + FADE_MS) {
+    // Kawałki, które spadły poniżej ekranu, już nie wrócą - usuwamy je.
+    pieces = pieces.filter(function (p) { return p.vy < 0 || p.y < canvas.height + 50; });
+
+    var allGone = fired === BURSTS && pieces.length === 0;
+    if (elapsed < DURATION_MS + FADE_MS && !allGone) {
       requestAnimationFrame(frame);
     } else {
       window.removeEventListener("resize", resize);

@@ -10,7 +10,8 @@ Opisy zadań i instrukcja dla uczestnika są dostępne bezpośrednio w aplikacji
 ## Wymagania
 
 - Python 3.10 lub nowszy
-- Flask (jedyna zależność do uruchomienia; pytest służy do testów)
+- Flask 
+- pytest (do uruchamiania testów)
 
 ## Instalacja
 
@@ -64,11 +65,13 @@ LDAP-injection-lab/
 │   ├── ldap_server.py      # serwer katalogu w pamięci: search() i bind()
 │   ├── ldap_filter.py      # parser i ewaluator filtrów LDAP (serce labu)
 │   ├── directory.py        # model wpisów + wczytywanie pliku LDIF
-│   ├── scenarios.py        # opisy 4 zadań 
+│   ├── dit.py              # drzewo katalogu do strony "Katalog LDAP"
+│   ├── scenarios.py        # opisy 4 zadań i ich flagi
 │   ├── static/
-│   │   └── style.css       # style
+│   │   ├── style.css       # style
+│   │   └── confetti.js     # konfetti po zaliczeniu wszystkich zadań
 │   └── templates/          # widoki HTML (Jinja2)
-└── tests/                  # testy silnika filtrów i scenariuszy
+└── tests/                  # testy silnika filtrów, scenariuszy i stron
 ```
 
 ## Struktura katalogu LDAP (DIT)
@@ -94,8 +97,7 @@ dc=example,dc=com                      # korzeń organizacji (Example Sp. z o.o.
 │
 └── ou=assets                          # zasoby / urządzenia sieciowe
     ├── cn=drukarka-hr                 # drukarka sieciowa w dziale HR
-    ├── cn=serwer-vpn                  # brama VPN
-    └── serialNumber=KEY-7731          # zasób bez atrybutów cn i ou
+    └── cn=serwer-vpn                  # brama VPN
 ```
 
 Katalog dzieli się na dwa poddrzewa: `ou=people` (konta pracowników)

@@ -1,5 +1,4 @@
-// Konfetti po ukończeniu wszystkich zadań. Bez zewnętrznych bibliotek,
-// żeby lab działał w pełni offline. Rysuje na płótnie nad stroną
+// Konfetti po ukończeniu wszystkich zadań. Rysuje na płótnie nad stroną
 // (bez blokowania kliknięć) i po kilku sekundach samo się usuwa.
 (function () {
   "use strict";
@@ -22,9 +21,16 @@
   document.body.appendChild(canvas);
   var ctx = canvas.getContext("2d");
 
+  // W, H to rozmiar okna w pikselach CSS - w nich liczymy ruch. Bufor płótna
+  // powiększamy o devicePixelRatio, żeby na ekranach HiDPI konfetti było ostre.
+  var W = 0, H = 0;
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    var dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
   window.addEventListener("resize", resize);
@@ -34,8 +40,8 @@
   // Dwa "działka" z dolnych rogów ekranu strzelające ku środkowi.
   function makePiece(fromLeft) {
     return {
-      x: fromLeft ? rand(0, canvas.width * 0.1) : rand(canvas.width * 0.9, canvas.width),
-      y: canvas.height + 10,
+      x: fromLeft ? rand(0, W * 0.1) : rand(W * 0.9, W),
+      y: H + 10,
       vx: (fromLeft ? 1 : -1) * rand(3, 9),
       vy: -rand(12, 20),
       w: rand(6, 11),
@@ -68,7 +74,7 @@
     // Kolejny wystrzał, gdy minął jego czas (pierwszy od razu).
     while (fired < BURSTS && elapsed >= fired * BURST_INTERVAL_MS) fireBurst();
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, W, H);
     ctx.globalAlpha = elapsed > DURATION_MS
       ? Math.max(0, 1 - (elapsed - DURATION_MS) / FADE_MS)
       : 1;
@@ -92,7 +98,7 @@
     }
 
     // Kawałki, które spadły poniżej ekranu, już nie wrócą - usuwamy je.
-    pieces = pieces.filter(function (p) { return p.vy < 0 || p.y < canvas.height + 50; });
+    pieces = pieces.filter(function (p) { return p.vy < 0 || p.y < H + 50; });
 
     var allGone = fired === BURSTS && pieces.length === 0;
     if (elapsed < DURATION_MS + FADE_MS && !allGone) {

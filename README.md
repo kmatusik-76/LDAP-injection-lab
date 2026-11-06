@@ -73,24 +73,29 @@ LDAP-injection-lab/
 
 ## Struktura katalogu LDAP (DIT)
 
+Dane pochodzą z pliku `data/seed.ldif`. Poniżej podano RDN każdego wpisu -
+pełny DN powstaje przez doklejenie DN-ów rodziców, np.
+`uid=jkowalski,ou=people,dc=example,dc=com`.
+
 ```
 dc=example,dc=com                      # korzeń organizacji (Example Sp. z o.o.)
 ├── uid=admin                          # konto administratora
 ├── cn=svc-webapp                      # konto serwisowe aplikacji
 │
-├── ou=people                         # pracownicy (książka adresowa)
-│   ├── uid=jkowalski    Jan Kowalski
-│   ├── uid=anowak       Anna Nowak
-│   ├── uid=pwisniewski  Piotr Wiśniewski
-│   ├── uid=mzielinska   Maria Zielińska
-│   ├── uid=tkaminski    Tomasz Kamiński
-│   ├── uid=elewandowska Ewa Lewandowska
-│   ├── uid=kdabrowski   Krzysztof Dąbrowski
-│   └── uid=aczarnecki   Adam Czarnecki
+├── ou=people                          # pracownicy (książka adresowa)
+│   ├── uid=jkowalski                  # Jan Kowalski
+│   ├── uid=anowak                     # Anna Nowak
+│   ├── uid=pwisniewski                # Piotr Wisniewski
+│   ├── uid=mzielinska                 # Maria Zielinska
+│   ├── uid=tkaminski                  # Tomasz Kaminski
+│   ├── uid=elewandowska               # Ewa Lewandowska
+│   ├── uid=kdabrowski                 # Krzysztof Dabrowski
+│   └── uid=aczarnecki                 # Adam Czarnecki
 │
-└── ou=assets                         # zasoby / urządzenia sieciowe
-    ├── cn=drukarka-hr
-    └── cn=serwer-vpn
+└── ou=assets                          # zasoby / urządzenia sieciowe
+    ├── cn=drukarka-hr                 # drukarka sieciowa w dziale HR
+    ├── cn=serwer-vpn                  # brama VPN
+    └── serialNumber=KEY-7731          # zasób bez atrybutów cn i ou
 ```
 
 Katalog dzieli się na dwa poddrzewa: `ou=people` (konta pracowników)

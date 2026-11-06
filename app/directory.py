@@ -44,6 +44,11 @@ class Entry:
         return values[0] if values else None
 
 
+def normalize_dn(dn: str) -> str:
+    """Normalizuje DN do porównań: małe litery, bez spacji wokół przecinków."""
+    return ",".join(part.strip() for part in dn.casefold().split(","))
+
+
 # Linia LDIF to "nazwa: wartość" albo "nazwa:: wartość-w-base64".
 _LDIF_LINE = re.compile(r"^([A-Za-z][A-Za-z0-9-]*)(::|:)(.*)$")
 

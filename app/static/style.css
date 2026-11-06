@@ -136,3 +136,121 @@ input[type=text], input[type=password] {
 details { margin-top: .6rem; }
 summary { cursor: pointer; font-weight: 600; }
 code { background: #eef0f3; padding: .1rem .3rem; border-radius: 3px; }
+
+/* Drzewo katalogu (strona /directory) w układzie warstwowym:
+   korzeń na górze, każdy poziom drzewa to osobny poziomy rząd.
+   Linie łączące rysujemy pseudo-elementami (::before / ::after). */
+main.wide { max-width: 1250px; }
+
+.dit { overflow-x: auto; }
+.dit ul {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin: 0;
+  padding: 1.4rem 0 0;
+  list-style: none;
+}
+.dit > ul {                       /* korzeń: bez linii nad nim */
+  padding-top: 0;
+  width: max-content;             /* szerokie drzewo przewija się zamiast ściskać */
+  margin: 0 auto;
+}
+.dit li {
+  position: relative;
+  padding: 1.4rem .25rem 0;
+  text-align: center;
+}
+/* Pozioma kreska nad rzędem rodzeństwa + pionowa kreska do każdego dziecka. */
+.dit li::before, .dit li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 1.4rem;
+  border-top: 1px solid #c4c8ce;
+}
+.dit li::before { right: 50%; }
+.dit li::after  { left: 50%; border-left: 1px solid #c4c8ce; }
+.dit li:first-child::before, .dit li:last-child::after { border: 0; }
+.dit li:last-child::before {
+  border-right: 1px solid #c4c8ce;
+  border-radius: 0 6px 0 0;
+}
+.dit li:first-child::after { border-radius: 6px 0 0 0; }
+.dit li:only-child::before, .dit li:only-child::after { display: none; }
+.dit li:only-child { padding-top: 0; }
+.dit > ul > li { padding-top: 0; }
+/* Pionowa kreska od rodzica w dół, do rzędu dzieci. */
+.dit ul ul::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 1.4rem;
+  border-left: 1px solid #c4c8ce;
+}
+
+/* Liczna grupa liści (np. pracownicy): siatka w ramce zamiast jednego rzędu. */
+.dit ul.dit-group {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: .4rem;
+  margin-top: 1.4rem;
+  padding: .5rem;
+  border: 1px dashed #c4c8ce;
+  border-radius: 10px;
+}
+.dit ul.dit-group::before { top: calc(-1.4rem - 1px); }
+.dit ul.dit-group > li { padding: 0; }
+.dit ul.dit-group > li::before, .dit ul.dit-group > li::after { display: none; }
+
+.dit-node {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  width: 8rem;
+  padding: .5rem .4rem;
+  background: #fff;
+  border: 1px solid #d5d9df;
+  border-radius: 8px;
+}
+.dit-node:hover { border-color: #2f5fdb; box-shadow: 0 1px 4px rgba(47, 95, 219, .2); }
+.dit-rdn {
+  font-weight: 600;
+  font-size: .74rem;
+  background: none;
+  padding: 0;
+  white-space: nowrap;
+}
+.dit-label { color: #444; font-size: .8rem; line-height: 1.25; }
+.dit-tasks { display: flex; gap: .25rem; flex-wrap: wrap; justify-content: center; }
+
+.dit-kind {
+  font-family: ui-monospace, monospace;
+  font-size: .72rem;
+  padding: .05rem .4rem;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.kind-org    { color: #5b3cc4; background: #f0ecfd; border-color: #d3c7f7; }
+.kind-ou     { color: #9a5b00; background: #fff4e0; border-color: #f2d6a6; }
+.kind-person { color: #1f5fb4; background: #e8f1fd; border-color: #bcd4f5; }
+.kind-role   { color: #555;    background: #eef0f3; border-color: #d0d4da; }
+.kind-device { color: #1f7a4d; background: #e3f6e9; border-color: #b5e0c4; }
+.kind-other  { color: #555;    background: #f4f5f7; border-color: #d0d4da; }
+
+.task-badge {
+  font-size: .72rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2f5fdb;
+  padding: .05rem .45rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.legend td { padding: .2rem .6rem .2rem 0; vertical-align: middle; }
+.dit-node .dit-kind { font-size: .66rem; }

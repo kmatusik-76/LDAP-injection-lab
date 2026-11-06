@@ -42,8 +42,7 @@ SCENARIOS: list[Scenario] = [
             "porównywania wartości, i jak zapisać go w polu hasła.",
         ),
         secure_note="Hasło nie trafia już do filtra. Login jest escapowany, "
-                    "a hasło sprawdza osobna operacja `bind`, więc gwiazdka "
-                    "w polu hasła nic nie daje.",
+                    "a hasło sprawdza osobna operacja `bind`.",
         flag="FLAG{ldap_login_bypass_wildcard}",
     ),
     Scenario(
@@ -56,13 +55,13 @@ SCENARIOS: list[Scenario] = [
              "których wyszukiwarka normalnie ukrywa. Są wśród nich osoby "
              "z zarządu i z działu bezpieczeństwa.",
         proof="W wynikach pojawi się konto z flagą w polu `description`, a razem "
-              "z nim prywatne numery telefonów, których nie powinno tam być.",
+              "z nim prywatne numery telefonów, których nie powinieneś móc zobaczyć.",
         vulnerability="Wyszukiwarka skleja filtr "
                       "`(|(cn=FRAZA)(mail=FRAZA)(uid=FRAZA))`, nie ograniczając "
                       "wyników do kont publicznych, a wpisana fraza trafia do "
                       "niego bez obróbki.",
         hints=(
-            "Wystarczy jeden znak, żeby warunek pasował do każdego wpisu naraz.",
+            "Chcemy znaleźć dopasowanie do wszystkich wpisów",
         ),
         secure_note="Fraza jest escapowana (gwiazdka zamienia się na `\\2a`), "
                     "a filtr ogranicza wyniki do kont `public`. Rekordy "

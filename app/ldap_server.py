@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .directory import Entry, load_ldif
+from .directory import Entry, load_ldif, normalize_dn as _norm_dn
 from .ldap_filter import parse_filter
 
 # Zasięgi wyszukiwania (jak w LDAP).
@@ -24,11 +24,6 @@ SUBTREE = "subtree"    # base i wszystko poniżej
 ROOT_DN = "dc=example,dc=com"
 
 _SEED_PATH = Path(__file__).resolve().parent.parent / "data" / "seed.ldif"
-
-
-def _norm_dn(dn: str) -> str:
-    """Normalizuje DN do porównań: małe litery, bez spacji wokół przecinków."""
-    return ",".join(part.strip() for part in dn.casefold().split(","))
 
 
 def _in_scope(entry_dn: str, base: str, scope: str) -> bool:

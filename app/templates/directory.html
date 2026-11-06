@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Katalog LDAP - Laboratorium LDAP injection{% endblock %}
+{% block main_class %}wide{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Struktura katalogu LDAP (DIT)</h2>
+    <p>
+      Katalog LDAP to drzewo wpisów. Każdy wpis ma <strong>RDN</strong>, czyli
+      swoją nazwę względem rodzica, np. <code>uid=jkowalski</code>. Pełna nazwa
+      wpisu (<strong>DN</strong>) powstaje przez doklejenie RDN-ów wszystkich
+      przodków, aż do korzenia:
+      <code>uid=jkowalski,ou=people,dc=example,dc=com</code>.
+      Najedź kursorem na wpis, żeby zobaczyć jego pełny DN.
+    </p>
+    <p>
+      Każde wyszukiwanie zaczyna się od wskazanej gałęzi (<em>base</em>)
+      i obejmuje wszystko, co jest pod nią. Znacznik <span class="task-badge">Zadanie N</span>
+      pokazuje, od której gałęzi zaczyna wyszukiwanie dane zadanie.
+    </p>
+  </div>
+
+  <div class="card dit">
+    <ul>
+      {% for node in tree recursive %}
+        <li>
+          <div class="dit-node" title="{{ node.dn }}">
+            <span class="dit-kind kind-{{ node.kind }}">{{ node.object_class }}</span>
+            <code class="dit-rdn">{{ node.name }}</code>
+            {% if node.label %}<span class="dit-label">{{ node.label }}</span>{% endif %}
+            {% if node.tasks %}
+              <span class="dit-tasks">
+                {% for t in node.tasks %}<span class="task-badge">Zadanie {{ t }}</span>{% endfor %}
+              </span>
+            {% endif %}
+          </div>
+          {% if node.children %}
+            <ul{% if node.group_children %} class="dit-group"{% endif %}>{{ loop(node.children) }}</ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Klasy obiektów</h3>
+    <table class="legend">
+      <tr><td><span class="dit-kind kind-org">organization</span></td><td>korzeń katalogu: organizacja</td></tr>
+      <tr><td><span class="dit-kind kind-ou">organizationalUnit</span></td><td>jednostka organizacyjna (gałąź grupująca wpisy)</td></tr>
+      <tr><td><span class="dit-kind kind-person">inetOrgPerson</span></td><td>konto osoby (pracownik lub administrator)</td></tr>
+      <tr><td><span class="dit-kind kind-role">organizationalRole</span></td><td>konto techniczne, np. serwisowe</td></tr>
+      <tr><td><span class="dit-kind kind-device">device</span></td><td>urządzenie lub zasób sieciowy</td></tr>
+    </table>
+  </div>
+{% endblock %}

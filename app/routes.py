@@ -7,6 +7,7 @@ from flask import (
 )
 from markupsafe import Markup, escape
 
+from .dit import build_tree
 from .ldap_filter import FilterError, describe, parse_filter
 from .scenarios import ALL_FLAGS, SCENARIOS, SCENARIOS_BY_ENDPOINT
 
@@ -68,6 +69,12 @@ def toggle():
 @bp.route("/")
 def index():
     return render_template("index.html")
+
+
+@bp.route("/directory")
+def directory():
+    tree = build_tree(app_logic().server.entries)
+    return render_template("directory.html", tree=tree)
 
 
 @bp.route("/login", methods=["GET", "POST"])

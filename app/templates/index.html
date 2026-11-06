@@ -7,13 +7,17 @@
       Aplikacja startuje w trybie <strong>PODATNY</strong> (czerwony pasek u góry).
       W tym trybie wykonaj zadania i zdobądź flagi. Następnie przełącz na
       <strong>BEZPIECZNY</strong> (zielony pasek) i sprawdź, że te same ataki
-      już nie działają. To jest właśnie sedno całego ćwiczenia.
+      już nie działają.
     </p>
     <p>
       Pod każdym formularzem widać <strong>filtr LDAP wysłany do serwera</strong>
       i sekcję, która pokazuje, jak serwer ten filtr rozumie. Zaglądaj tam po
       każdej próbie, bo najlepiej widać wtedy, co dokładnie zmieniło się
       w zapytaniu.
+    </p>
+    <p>
+      Strukturę katalogu, na którym pracujesz, znajdziesz na stronie
+      <a href="{{ url_for('main.directory') }}">Katalog LDAP</a>.
     </p>
     <p>
       Flagi mają format <code>FLAG{...}</code>. Każdą z nich możesz potwierdzić

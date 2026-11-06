@@ -4,16 +4,22 @@
   <div class="card">
     <h1>Laboratorium LDAP injection</h1>
     <p>
-      To środowisko dydaktyczne pokazuje, dlaczego sklejanie zapytań LDAP
-      z niezaufanych danych jest niebezpieczne. Aplikacja ma celowe luki.
-      Pracuj w trybie <strong>PODATNY</strong>, zdobądź flagi, a potem przełącz
-      na <strong>BEZPIECZNY</strong> i sprawdź, że te same ataki już nie działają.
+      Aplikacja startuje w trybie <strong>PODATNY</strong> (czerwony pasek u góry).
+      W tym trybie wykonaj zadania i zdobądź flagi. Następnie przełącz na
+      <strong>BEZPIECZNY</strong> (zielony pasek) i sprawdź, że te same ataki
+      już nie działają. To jest właśnie sedno całego ćwiczenia.
     </p>
     <p>
-      Na każdym ekranie pokazujemy dokładny <strong>filtr LDAP wysłany do
-      serwera</strong> oraz to, jak serwer go rozumie. To najlepsza podpowiedź.
-      Składnię filtrów możesz przećwiczyć bez ryzyka w
-      <a href="{{ url_for('main.console') }}">Konsoli LDAP</a>.
+      Pod każdym formularzem widać <strong>filtr LDAP wysłany do serwera</strong>
+      i sekcję, która pokazuje, jak serwer ten filtr rozumie. Zaglądaj tam po
+      każdej próbie, bo najlepiej widać wtedy, co dokładnie zmieniło się
+      w zapytaniu. Jeśli chcesz najpierw oswoić się ze składnią filtrów, otwórz
+      <a href="{{ url_for('main.console') }}">Konsolę LDAP</a> i poćwicz na danych
+      z piaskownicy (tam nie ma flag).
+    </p>
+    <p>
+      Flagi mają format <code>FLAG{...}</code>. Każdą z nich możesz potwierdzić
+      na stronie <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>.
     </p>
   </div>
 
@@ -23,8 +29,18 @@
       <div class="scenario">
         <h3><a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a></h3>
         <p class="meta">Trudność: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
-        <p>{{ s.goal }}</p>
+        <p>{{ s.goal | inline_code }}</p>
       </div>
     {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>Po wykonaniu zadań</h2>
+    <p>
+      Kliknij <strong>Przełącz na BEZPIECZNY</strong> w górnym pasku i powtórz
+      wszystkie ataki. Na stronie każdego zadania, w sekcji
+      <em>Co zmienia tryb BEZPIECZNY</em>, znajdziesz wyjaśnienie, dlaczego
+      atak przestał działać.
+    </p>
   </div>
 {% endblock %}

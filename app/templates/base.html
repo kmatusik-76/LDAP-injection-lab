@@ -20,10 +20,9 @@
 
   <nav>
     <a href="{{ url_for('main.index') }}">Start</a>
-    <a href="{{ url_for('main.login') }}">Zadanie 1: logowanie</a>
-    <a href="{{ url_for('main.people') }}">Zadanie 2: pracownicy</a>
-    <a href="{{ url_for('main.assets') }}">Zadanie 3: zasoby</a>
-    <a href="{{ url_for('main.recovery') }}">Zadanie 4: odzyskiwanie</a>
+    {% for s in scenarios %}
+      <a href="{{ url_for(s.endpoint) }}">{{ s.nav_label }}</a>
+    {% endfor %}
     <a href="{{ url_for('main.console') }}">Konsola LDAP</a>
     <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>
   </nav>

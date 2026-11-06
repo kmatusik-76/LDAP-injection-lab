@@ -4,7 +4,7 @@ Celowo podatna aplikacja webowa do nauki o wstrzykiwaniu zapytań LDAP. Całoś�
 działa lokalnie - wbudowany serwer katalogu pracuje w pamięci, więc nie trzeba
 niczego instalować poza Pythonem.
 
-Lista zadań i instrukcja dla uczestnika: [ZADANIA.md](ZADANIA.md).
+Opisy zadań i instrukcja dla uczestnika są dostępne bezpośrednio w aplikacji.
 
 
 ## Wymagania

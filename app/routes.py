@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import re
+
 from flask import (
     Blueprint, current_app, redirect, render_template, request, session, url_for,
 )
+from markupsafe import Markup, escape
 
 from .ldap_filter import FilterError, describe, parse_filter
 from .scenarios import ALL_FLAGS, SCENARIOS, SCENARIOS_BY_ENDPOINT
@@ -33,6 +36,16 @@ def _local_path(target: str | None) -> str:
     if target and target.startswith("/") and not target.startswith("//"):
         return target
     return url_for("main.index")
+
+
+_INLINE_CODE = re.compile(r"`([^`]+)`")
+
+
+@bp.app_template_filter("inline_code")
+def inline_code(text: str) -> Markup:
+    """Zamienia `fragmenty` w opisach zadań na <code>. Najpierw escapuje całość,
+    więc treść nie może wstrzyknąć własnego HTML-a."""
+    return Markup(_INLINE_CODE.sub(r"<code>\1</code>", str(escape(text))))
 
 
 @bp.app_context_processor

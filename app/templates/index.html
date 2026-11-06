@@ -35,7 +35,7 @@
           <a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a>
           {% if s.id in solved %}<span class="solved-badge">&#10003; Zaliczone</span>{% endif %}
         </h3>
-        <p class="meta">Trudność: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
+        <p class="meta">Trudność: {{ s.difficulty }}</p>
         <p>{{ s.goal | inline_code }}</p>
       </div>
     {% endfor %}

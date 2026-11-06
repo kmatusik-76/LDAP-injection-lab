@@ -46,6 +46,8 @@ nav a {
   font-size: .9rem;
 }
 nav a:hover { background: #343a41; color: #fff; }
+nav a.solved { background: #1f7a4d; color: #fff; }
+nav a.solved:hover { background: #18613d; }
 
 main { max-width: 900px; margin: 1.2rem auto; padding: 0 1rem; }
 
@@ -132,6 +134,24 @@ input[type=text], input[type=password] {
 
 .scenario { padding: .6rem 0; border-top: 1px solid #eee; }
 .scenario:first-of-type { border-top: none; }
+.scenario.solved {
+  background: #eef9f1;
+  border-left: 4px solid #1f7a4d;
+  padding-left: .8rem;
+  padding-right: .8rem;
+  border-radius: 4px;
+}
+.solved-badge {
+  font-size: .75rem;
+  font-weight: 600;
+  color: #fff;
+  background: #1f7a4d;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: .4rem;
+  white-space: nowrap;
+}
 
 details { margin-top: .6rem; }
 summary { cursor: pointer; font-weight: 600; }
@@ -254,3 +274,12 @@ main.wide { max-width: 1250px; }
 
 .legend td { padding: .2rem .6rem .2rem 0; vertical-align: middle; }
 .dit-node .dit-kind { font-size: .66rem; }
+
+/* Gratulacje po ukończeniu wszystkich zadań. */
+.congrats {
+  text-align: center;
+  background: linear-gradient(135deg, #e3f6e9, #fff8e1);
+  border-color: #b5e0c4;
+}
+.congrats h2 { color: #1f7a4d; margin-bottom: .4rem; }
+.congrats-trophy { font-size: 3rem; line-height: 1; margin-bottom: .4rem; }

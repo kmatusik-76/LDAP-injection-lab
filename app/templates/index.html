@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Start - Laboratorium LDAP injection{% endblock %}
 {% block content %}
+  {% if all_solved %}{% include "congrats.html" %}{% endif %}
   <div class="card">
     <h1>Laboratorium LDAP injection</h1>
     <p>
@@ -27,9 +28,13 @@
 
   <div class="card">
     <h2>Zadania</h2>
+    <p class="meta">Zaliczono {{ solved | length }} z {{ scenarios | length }}.</p>
     {% for s in scenarios %}
-      <div class="scenario">
-        <h3><a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a></h3>
+      <div class="scenario{% if s.id in solved %} solved{% endif %}">
+        <h3>
+          <a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a>
+          {% if s.id in solved %}<span class="solved-badge">&#10003; Zaliczone</span>{% endif %}
+        </h3>
         <p class="meta">Trudność: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
         <p>{{ s.goal | inline_code }}</p>
       </div>

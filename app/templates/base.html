@@ -22,7 +22,11 @@
     <a href="{{ url_for('main.index') }}">Start</a>
     <a href="{{ url_for('main.directory') }}">Katalog LDAP</a>
     {% for s in scenarios %}
-      <a href="{{ url_for(s.endpoint) }}">{{ s.nav_label }}</a>
+      {% if s.id in solved %}
+        <a class="solved" href="{{ url_for(s.endpoint) }}" title="Zadanie zaliczone">&#10003; {{ s.nav_label }}</a>
+      {% else %}
+        <a href="{{ url_for(s.endpoint) }}">{{ s.nav_label }}</a>
+      {% endif %}
     {% endfor %}
     <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>
   </nav>
@@ -30,5 +34,6 @@
   <main class="{% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

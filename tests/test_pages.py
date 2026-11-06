@@ -64,3 +64,59 @@ def test_directory_page_does_not_leak_secrets(client):
 def test_directory_is_linked_in_nav(client):
     html = client.get("/").get_data(as_text=True)
     assert 'href="/directory"' in html
+
+
+def test_no_task_solved_at_start(client):
+    html = client.get("/").get_data(as_text=True)
+    assert "Zaliczono 0 z 4." in html
+    assert 'class="solved"' not in html
+    assert "Zaliczone" not in html
+
+
+def test_valid_flag_marks_task_solved(client):
+    task = SCENARIOS[1]
+    html = client.post("/flags", data={"flag": task.flag}).get_data(as_text=True)
+    assert "Flaga poprawna" in html
+    # Kafelek zadania w menu jest zielony (na każdej stronie)...
+    assert f'class="solved" href="/{task.endpoint.split(".")[1]}"' in html
+    # ...a na stronie głównej zadanie jest zaliczone, pozostałe nie.
+    html = client.get("/").get_data(as_text=True)
+    assert "Zaliczono 1 z 4." in html
+    assert html.count("&#10003; Zaliczone") == 1
+    assert html.count('class="solved"') == 1
+
+
+def test_invalid_flag_does_not_mark_anything(client):
+    html = client.post("/flags", data={"flag": "FLAG{zla_flaga}"}).get_data(as_text=True)
+    assert "To nie jest prawidłowa flaga." in html
+    assert "Zaliczono 0 z 4." in client.get("/").get_data(as_text=True)
+
+
+def test_all_flags_solve_all_tasks(client):
+    for s in SCENARIOS:
+        client.post("/flags", data={"flag": s.flag})
+    client.post("/flags", data={"flag": SCENARIOS[0].flag})   # ponowne wpisanie nie dubluje
+    html = client.get("/").get_data(as_text=True)
+    assert "Zaliczono 4 z 4." in html
+    assert html.count('class="solved"') == len(SCENARIOS)
+
+
+def test_congrats_and_confetti_after_last_flag(client):
+    for s in SCENARIOS[:-1]:
+        html = client.post("/flags", data={"flag": s.flag}).get_data(as_text=True)
+        assert "CTF ukończony" not in html
+        assert "confetti.js" not in html
+
+    html = client.post("/flags", data={"flag": SCENARIOS[-1].flag}).get_data(as_text=True)
+    assert "CTF ukończony" in html
+    assert "confetti.js" in html
+
+    # Gratulacje zostają na stronie głównej, ale konfetti już się nie powtarza.
+    assert "CTF ukończony" in client.get("/").get_data(as_text=True)
+    html = client.post("/flags", data={"flag": SCENARIOS[0].flag}).get_data(as_text=True)
+    assert "CTF ukończony" in html
+    assert "confetti.js" not in html
+
+
+def test_confetti_script_is_served(client):
+    assert client.get("/static/confetti.js").status_code == 200

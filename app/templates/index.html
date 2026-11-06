@@ -4,15 +4,16 @@
   <div class="card">
     <h1>Laboratorium LDAP injection</h1>
     <p>
-      To srodowisko dydaktyczne pokazuje, dlaczego sklejanie zapytan LDAP
+      To środowisko dydaktyczne pokazuje, dlaczego sklejanie zapytań LDAP
       z niezaufanych danych jest niebezpieczne. Aplikacja ma celowe luki.
-      Pracuj w trybie <strong>PODATNY</strong>, zdobadz flagi, a potem przelacz
-      na <strong>BEZPIECZNY</strong> i sprawdz, ze te same ataki juz nie dzialaja.
+      Pracuj w trybie <strong>PODATNY</strong>, zdobądź flagi, a potem przełącz
+      na <strong>BEZPIECZNY</strong> i sprawdź, że te same ataki już nie działają.
     </p>
     <p>
-      Na kazdym ekranie pokazujemy dokladny <strong>filtr LDAP wyslany do
-      serwera</strong> oraz to, jak serwer go rozumie. To najlepsza podpowiedz.
-      Skladnie filtrow mozesz cwiczyc bez ryzyka w <a href="{{ url_for('main.console') }}">Konsoli LDAP</a>.
+      Na każdym ekranie pokazujemy dokładny <strong>filtr LDAP wysłany do
+      serwera</strong> oraz to, jak serwer go rozumie. To najlepsza podpowiedź.
+      Składnię filtrów możesz przećwiczyć bez ryzyka w
+      <a href="{{ url_for('main.console') }}">Konsoli LDAP</a>.
     </p>
   </div>
 
@@ -21,7 +22,7 @@
     {% for s in scenarios %}
       <div class="scenario">
         <h3><a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a></h3>
-        <p class="meta">Trudnosc: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
+        <p class="meta">Trudność: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
         <p>{{ s.goal }}</p>
       </div>
     {% endfor %}

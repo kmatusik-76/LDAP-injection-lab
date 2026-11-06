@@ -1,38 +1,43 @@
-"""Lekki parser i ewaluator filtrow LDAP (podzbior RFC 4515).
+"""Lekki parser i ewaluator filtrów LDAP (podzbiór RFC 4515).
 
-To jest serce laboratorium. Serwer LDAP nie "rozumie" atakow: on po prostu
-bierze napis z filtrem, rozklada go na drzewo warunkow i sprawdza, ktore wpisy
-mu odpowiadaja. Wstrzykniecie LDAP dziala wlasnie dlatego, ze aplikacja skleja
-napis z filtrem z niezaufanych danych uzytkownika, przez co to drzewo wyglada
-inaczej, niz zakladal programista.
+To jest serce laboratorium. Serwer LDAP nie "rozumie" ataków: on po prostu
+bierze napis z filtrem, rozkłada go na drzewo warunków i sprawdza, które wpisy
+mu odpowiadają. Wstrzyknięcie LDAP działa właśnie dlatego, że aplikacja skleja
+napis z filtrem z niezaufanych danych użytkownika, przez co to drzewo wygląda
+inaczej, niż założył programista.
 
-Obslugiwana skladnia:
+Obsługiwana składnia:
 
-    filtr      = "(" tresc ")"
-    tresc      = "&" lista | "|" lista | "!" filtr | warunek
+    filtr      = "(" treść ")"
+    treść      = "&" lista | "|" lista | "!" filtr | warunek
     lista      = filtr+
-    warunek    = atrybut operator wartosc
+    warunek    = atrybut operator wartość
     operator   = "=" | ">=" | "<=" | "~="
 
-Wartosc moze zawierac:
-    *              znak wieloznaczny (obecnosc / dopasowanie fragmentu),
-    \\XX           sekwencje escape (np. \\2a to doslowna gwiazdka).
+Wartość może zawierać:
+    *              znak wieloznaczny (obecność / dopasowanie fragmentu),
+    \\XX           sekwencje escape (np. \\2a to dosłowna gwiazdka).
 """
 
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
+#: Maksymalna głębokość zagnieżdżenia filtra. Prawdziwe serwery też mają taki
+#: limit - bez niego wystarczyłby filtr w rodzaju "(&(&(&(&..." , żeby zabić
+#: proces przepełnieniem stosu zamiast dostać czytelny błąd składni.
+MAX_DEPTH = 64
 
 
 class FilterError(ValueError):
-    """Blad skladni filtra - odpowiednik odrzucenia zapytania przez serwer."""
+    """Błąd składni filtra - odpowiednik odrzucenia zapytania przez serwer."""
 
 
-# --- Escapowanie wartosci (RFC 4515) ---------------------------------------
+# --- Escapowanie wartości (RFC 4515) ---------------------------------------
 
-# Znaki, ktore w wartosci filtra maja znaczenie specjalne. Bezpieczny kod musi
-# zamienic je na sekwencje \\XX, zanim wklei dane uzytkownika do filtra.
+# Znaki, które w wartości filtra mają znaczenie specjalne. Bezpieczny kod musi
+# zamienić je na sekwencje \\XX, zanim wklei dane użytkownika do filtra.
 _SPECIAL = {
     "*": "\\2a",
     "(": "\\28",
@@ -47,7 +52,7 @@ def escape_filter_chars(value: str) -> str:
     return "".join(_SPECIAL.get(ch, ch) for ch in value)
 
 
-# Marker znaku wieloznacznego (odrozniony od doslownej gwiazdki po escapowaniu).
+# Marker znaku wieloznacznego (odróżniony od dosłownej gwiazdki po escapowaniu).
 class _Wildcard:
     def __repr__(self):
         return "*"
@@ -59,10 +64,10 @@ _HEX = set("0123456789abcdefABCDEF")
 
 
 def _tokenize_value(raw: str) -> list:
-    """Rozklada surowa wartosc na liste: doslowne znaki i markery WILDCARD.
+    """Rozkłada surową wartość na listę: dosłowne znaki i markery WILDCARD.
 
-    Sekwencje \\XX zamienia na doslowny znak (wiec \\2a to zwykla gwiazdka,
-    a nie znak wieloznaczny). Niezescapowana gwiazdka staje sie WILDCARD.
+    Sekwencje \\XX zamienia na dosłowny znak (więc \\2a to zwykła gwiazdka,
+    a nie znak wieloznaczny). Niezescapowana gwiazdka staje się WILDCARD.
     """
     tokens: list = []
     i, n = 0, len(raw)
@@ -74,7 +79,7 @@ def _tokenize_value(raw: str) -> list:
                 tokens.append(chr(int(hexpart, 16)))
                 i += 3
             else:
-                raise FilterError(f"Nieprawidlowa sekwencja escape: '\\{hexpart}'")
+                raise FilterError(f"Nieprawidłowa sekwencja escape: '\\{hexpart}'")
         elif ch == "*":
             tokens.append(WILDCARD)
             i += 1
@@ -84,7 +89,7 @@ def _tokenize_value(raw: str) -> list:
     return tokens
 
 
-# --- Wezly drzewa filtra ----------------------------------------------------
+# --- Węzły drzewa filtra ----------------------------------------------------
 
 
 @dataclass
@@ -113,7 +118,7 @@ class Not:
 
 @dataclass
 class Present:
-    """(atrybut=*) - wpis ma ten atrybut z dowolna wartoscia."""
+    """(atrybut=*) - wpis ma ten atrybut z dowolną wartością."""
 
     attr: str
 
@@ -133,34 +138,34 @@ class Equality:
 
 @dataclass
 class Substring:
-    """(atrybut=frag*ment) - dopasowanie fragmentow rozdzielonych gwiazdka."""
+    """(atrybut=frag*ment) - dopasowanie fragmentów rozdzielonych gwiazdką."""
 
     attr: str
-    parts: list  # doslowne segmenty; puste na brzegach oznaczaja gwiazdke
+    parts: list  # dosłowne segmenty; puste na brzegach oznaczają gwiazdkę
+
+    def __post_init__(self):
+        # Wzorzec kompilujemy raz, a nie dla każdego sprawdzanego wpisu.
+        pattern = "^" + ".*".join(re.escape(p) for p in self.parts) + "$"
+        self._regex = re.compile(pattern, re.IGNORECASE | re.DOTALL)
 
     def matches(self, entry) -> bool:
-        pattern = "^" + ".*".join(re.escape(p) for p in self.parts) + "$"
-        rx = re.compile(pattern, re.IGNORECASE | re.DOTALL)
-        return any(rx.match(v) for v in entry.get(self.attr))
+        return any(self._regex.match(v) for v in entry.get(self.attr))
 
 
 @dataclass
 class Comparison:
-    """(atrybut>=wartosc) i (atrybut<=wartosc) - porownanie."""
+    """(atrybut>=wartość) i (atrybut<=wartość) - porównanie."""
 
     attr: str
     value: str
     op: str  # ">=" lub "<="
 
     def matches(self, entry) -> bool:
-        for v in entry.get(self.attr):
-            if _compare(v, self.value, self.op):
-                return True
-        return False
+        return any(_compare(v, self.value, self.op) for v in entry.get(self.attr))
 
 
 def _compare(left: str, right: str, op: str) -> bool:
-    # Jesli obie strony sa liczbami, porownaj liczbowo; inaczej leksykalnie.
+    # Jeśli obie strony są liczbami, porównaj liczbowo; inaczej leksykalnie.
     try:
         a: object = float(left)
         b: object = float(right)
@@ -169,7 +174,7 @@ def _compare(left: str, right: str, op: str) -> bool:
     return a >= b if op == ">=" else a <= b
 
 
-# --- Parser (zejscie rekurencyjne) ------------------------------------------
+# --- Parser (zejście rekurencyjne) ------------------------------------------
 
 
 class _Parser:
@@ -177,13 +182,14 @@ class _Parser:
         self.s = text
         self.i = 0
         self.n = len(text)
+        self.depth = 0
 
     def parse(self):
         node = self._filter()
         if self.i != self.n:
             raise FilterError(
-                "Nadmiarowe znaki po zamknieciu filtra - filtr musi byc "
-                "pojedynczym, poprawnie domknietym wyrazeniem."
+                "Nadmiarowe znaki po zamknięciu filtra - filtr musi być "
+                "pojedynczym, poprawnie domkniętym wyrażeniem."
             )
         return node
 
@@ -192,12 +198,18 @@ class _Parser:
 
     def _filter(self):
         if self._peek() != "(":
-            raise FilterError("Oczekiwano '(' na poczatku filtra.")
+            raise FilterError("Oczekiwano '(' na początku filtra.")
+        if self.depth >= MAX_DEPTH:
+            raise FilterError(
+                f"Filtr jest zagnieżdżony głębiej niż {MAX_DEPTH} poziomów."
+            )
+        self.depth += 1
         self.i += 1
         node = self._content()
         if self._peek() != ")":
-            raise FilterError("Oczekiwano ')' - niedomkniety filtr.")
+            raise FilterError("Oczekiwano ')' - niedomknięty filtr.")
         self.i += 1
+        self.depth -= 1
         return node
 
     def _content(self):
@@ -235,7 +247,7 @@ class _Parser:
             if not attr:
                 raise FilterError("Brak nazwy atrybutu przed operatorem.")
             if op_char == "~":
-                return Equality(attr, value)  # przyblizone traktujemy jak rownosc
+                return Equality(attr, value)  # przybliżone traktujemy jak równość
             return Comparison(attr, value, op_char + "=")
         if op_char == "=":
             self.i += 1
@@ -246,7 +258,7 @@ class _Parser:
         raise FilterError("Niekompletny warunek - brak operatora.")
 
     def _read_value(self) -> str:
-        # Wartosc konczy sie na pierwszym niezescapowanym nawiasie.
+        # Wartość kończy się na pierwszym niezescapowanym nawiasie.
         start = self.i
         while self.i < self.n and self.s[self.i] not in "()":
             self.i += 1
@@ -254,12 +266,12 @@ class _Parser:
 
 
 def _build_match(attr: str, raw: str):
-    """Z surowej wartosci buduje odpowiedni wezel: rownosc, obecnosc lub fragment."""
+    """Z surowej wartości buduje odpowiedni węzeł: równość, obecność lub fragment."""
     tokens = _tokenize_value(raw)
     if WILDCARD not in tokens:
         return Equality(attr, "".join(tokens))
 
-    # Podziel na segmenty literalow rozdzielone gwiazdkami.
+    # Podziel na segmenty literałów rozdzielone gwiazdkami.
     parts: list[str] = [""]
     for tok in tokens:
         if tok is WILDCARD:
@@ -267,14 +279,14 @@ def _build_match(attr: str, raw: str):
         else:
             parts[-1] += tok
 
-    # Sama gwiazdka (parts == ["", ""]) to test obecnosci atrybutu.
+    # Sama gwiazdka (parts == ["", ""]) to test obecności atrybutu.
     if all(p == "" for p in parts):
         return Present(attr)
     return Substring(attr, parts)
 
 
 def parse_filter(text: str):
-    """Parsuje napis z filtrem LDAP na drzewo warunkow. Rzuca FilterError."""
+    """Parsuje napis z filtrem LDAP na drzewo warunków. Rzuca FilterError."""
     if not isinstance(text, str) or not text.strip():
         raise FilterError("Pusty filtr.")
     return _Parser(text.strip()).parse()
@@ -284,10 +296,10 @@ def parse_filter(text: str):
 
 
 def describe(node, indent: int = 0) -> str:
-    """Zwraca wcietą, czytelna reprezentacje drzewa filtra."""
+    """Zwraca wciętą, czytelną reprezentację drzewa filtra."""
     pad = "  " * indent
     if isinstance(node, And):
-        head = f"{pad}AND (wszystkie warunki musza byc spelnione)"
+        head = f"{pad}AND (wszystkie warunki muszą być spełnione)"
         return "\n".join([head] + [describe(c, indent + 1) for c in node.children])
     if isinstance(node, Or):
         head = f"{pad}OR (wystarczy jeden warunek)"
@@ -295,7 +307,7 @@ def describe(node, indent: int = 0) -> str:
     if isinstance(node, Not):
         return f"{pad}NOT\n" + describe(node.child, indent + 1)
     if isinstance(node, Present):
-        return f"{pad}{node.attr} istnieje (dowolna wartosc)"
+        return f"{pad}{node.attr} istnieje (dowolna wartość)"
     if isinstance(node, Equality):
         return f"{pad}{node.attr} == '{node.value}'"
     if isinstance(node, Substring):

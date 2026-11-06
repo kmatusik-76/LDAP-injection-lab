@@ -1,6 +1,6 @@
 {% macro render_result(result) %}
   <div class="card result">
-    <div class="filter-label">Filtr LDAP wyslany do serwera ({{ result.mode }}):</div>
+    <div class="filter-label">Filtr LDAP wysłany do serwera ({{ result.mode }}):</div>
     <pre class="filter">{{ result.filter_used }}</pre>
 
     {% set tree = explain_filter(result.filter_used) %}
@@ -11,7 +11,7 @@
       </details>
     {% endif %}
 
-    {% if result.base %}<div class="base">Zasieg wyszukiwania: {{ result.base }}</div>{% endif %}
+    {% if result.base %}<div class="base">Zasięg wyszukiwania: {{ result.base }}</div>{% endif %}
 
     <p class="msg {{ 'ok' if result.ok else 'err' }}">{{ result.message }}</p>
 

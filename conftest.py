@@ -1,4 +1,4 @@
-# Dodaje katalog glowny projektu do sys.path, zeby "import app" dzialal w testach.
+# Dodaje katalog główny projektu do sys.path, żeby "import app" działał w testach.
 import os
 import sys
 

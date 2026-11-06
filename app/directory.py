@@ -3,16 +3,22 @@
 from __future__ import annotations
 
 import base64
+import binascii
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
+
+
+class LdifError(ValueError):
+    """Plik LDIF jest niepoprawny - komunikat wskazuje numer linii."""
 
 
 @dataclass
 class Entry:
     """Pojedynczy wpis katalogu.
 
-    Atrybuty trzymamy w kolejnosci wczytania (do czytelnego wyswietlania),
-    a wyszukiwanie po nazwie atrybutu jest bez rozroznienia wielkosci liter.
+    Atrybuty trzymamy w kolejności wczytania (do czytelnego wyświetlania),
+    a wyszukiwanie po nazwie atrybutu jest bez rozróżnienia wielkości liter.
     """
 
     dn: str
@@ -21,7 +27,7 @@ class Entry:
 
     def add(self, name: str, value: str) -> None:
         key = name.casefold()
-        for i, (existing, values) in enumerate(self.attributes):
+        for existing, values in self.attributes:
             if existing.casefold() == key:
                 values.append(value)
                 break
@@ -30,7 +36,7 @@ class Entry:
         self._index.setdefault(key, []).append(value)
 
     def get(self, name: str) -> list[str]:
-        """Zwraca wartosci atrybutu (lista, moze byc pusta)."""
+        """Zwraca wartości atrybutu (lista, może być pusta)."""
         return self._index.get(name.casefold(), [])
 
     def first(self, name: str) -> str | None:
@@ -38,47 +44,70 @@ class Entry:
         return values[0] if values else None
 
 
+# Linia LDIF to "nazwa: wartość" albo "nazwa:: wartość-w-base64".
+_LDIF_LINE = re.compile(r"^([A-Za-z][A-Za-z0-9-]*)(::|:)(.*)$")
+
+
 def load_ldif(path: Path) -> list[Entry]:
     """Minimalny, ale poprawny parser LDIF dla naszych danych.
 
-    Obsluguje: komentarze (#), puste linie jako separator wpisow, zawijanie
-    linii (kontynuacja zaczyna sie od spacji) oraz wartosci base64 zapisane
+    Obsługuje: komentarze (#), puste linie jako separator wpisów, zawijanie
+    linii (kontynuacja zaczyna się od spacji) oraz wartości base64 zapisane
     jako 'atrybut:: <base64>'.
     """
     entries: list[Entry] = []
     current: Entry | None = None
 
-    def flush():
+    def flush() -> None:
         nonlocal current
         if current is not None:
             entries.append(current)
         current = None
 
-    # Najpierw sklej zawijane linie w logiczne.
-    logical: list[str] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    # Najpierw sklej zawijane linie w logiczne, pamiętając numer linii z pliku
+    # (przyda się w komunikacie o błędzie).
+    logical: list[tuple[int, str]] = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if line.startswith(" ") and logical:
-            logical[-1] += line[1:]
+            prev_no, prev_text = logical[-1]
+            logical[-1] = (prev_no, prev_text + line[1:])
         else:
-            logical.append(line)
+            logical.append((lineno, line))
 
-    for line in logical:
+    for lineno, line in logical:
         if line.startswith("#"):
             continue
-        if line.strip() == "":
+        if not line.strip():
             flush()
             continue
-        if "::" in line and line.split("::", 1)[0].strip().isalnum():
-            name, b64 = line.split("::", 1)
-            value = base64.b64decode(b64.strip()).decode("utf-8")
+
+        match = _LDIF_LINE.match(line)
+        if match is None:
+            raise LdifError(
+                f"{path.name}, linia {lineno}: oczekiwano 'atrybut: wartość', "
+                f"a jest: {line!r}"
+            )
+        name, separator, raw = match.group(1), match.group(2), match.group(3)
+        if separator == "::":
+            try:
+                value = base64.b64decode(raw.strip(), validate=True).decode("utf-8")
+            except (binascii.Error, UnicodeDecodeError) as exc:
+                raise LdifError(
+                    f"{path.name}, linia {lineno}: nieprawidłowa wartość base64 "
+                    f"atrybutu '{name}': {exc}"
+                ) from exc
         else:
-            name, value = line.split(":", 1)
-            value = value.lstrip()
-        name = name.strip()
-        if name == "dn":
+            value = raw.lstrip()
+
+        if name.casefold() == "dn":
             flush()
             current = Entry(dn=value)
-        elif current is not None:
+        elif current is None:
+            raise LdifError(
+                f"{path.name}, linia {lineno}: atrybut '{name}' pojawił się "
+                "przed pierwszą linią 'dn:'."
+            )
+        else:
             current.add(name, value)
 
     flush()

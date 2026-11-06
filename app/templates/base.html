@@ -10,10 +10,11 @@
   <div class="bar {{ 'safe' if secure_mode else 'vuln' }}">
     <span class="mode">
       Tryb: <strong>{{ 'BEZPIECZNY' if secure_mode else 'PODATNY' }}</strong>
-      {{ '(escapowanie + bind + autoryzacja)' if secure_mode else '(konkatenacja danych wejsciowych)' }}
+      {{ '(escapowanie + bind + autoryzacja)' if secure_mode else '(konkatenacja danych wejściowych)' }}
     </span>
     <form method="post" action="{{ url_for('main.toggle') }}">
-      <button type="submit">Przelacz na {{ 'PODATNY' if secure_mode else 'BEZPIECZNY' }}</button>
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button type="submit">Przełącz na {{ 'PODATNY' if secure_mode else 'BEZPIECZNY' }}</button>
     </form>
   </div>
 
@@ -24,7 +25,7 @@
     <a href="{{ url_for('main.assets') }}">Zadanie 3: zasoby</a>
     <a href="{{ url_for('main.recovery') }}">Zadanie 4: odzyskiwanie</a>
     <a href="{{ url_for('main.console') }}">Konsola LDAP</a>
-    <a href="{{ url_for('main.flags') }}">Sprawdz flage</a>
+    <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>
   </nav>
 
   <main>

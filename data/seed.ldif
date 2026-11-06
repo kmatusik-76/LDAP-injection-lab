@@ -1,7 +1,7 @@
 # Dane katalogu dla laboratorium LDAP injection.
 #
-# To jest celowo podatne srodowisko dydaktyczne. Rekordy sa podzielone na
-# poddrzewa, zeby kazde zadanie mialo swoj zasieg:
+# To celowo podatne srodowisko dydaktyczne. Rekordy sa podzielone na poddrzewa,
+# zeby kazde zadanie mialo wlasny zasieg:
 #
 #   dc=example,dc=com                root organizacji
 #     uid=admin,...                  konto administratora (Zadanie 1)
@@ -10,8 +10,8 @@
 #     ou=assets,...                  zasoby/urzadzenia (Zadanie 3)
 #     ou=sandbox,...                 piaskownica konsoli (bez flag)
 #
-# Flagi maja format FLAG{...} i sa poukrywane w atrybutach rekordow, do
-# ktorych zwykly uzytkownik nie powinien miec dostepu.
+# Flagi maja format FLAG{...} i sa ukryte w atrybutach rekordow, do ktorych
+# zwykly uzytkownik nie powinien miec dostepu.
 
 dn: dc=example,dc=com
 objectClass: top
@@ -20,7 +20,7 @@ objectClass: organization
 dc: example
 o: Example Sp. z o.o.
 
-# --- Administrator: cel Zadania 1 (ominiecie logowania) ---
+# --- Administrator: cel Zadania 1 (obejscie logowania) ---
 dn: uid=admin,dc=example,dc=com
 objectClass: top
 objectClass: person

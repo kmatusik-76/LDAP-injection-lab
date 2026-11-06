@@ -1,0 +1,45 @@
+{% macro render_result(result) %}
+  <div class="card result">
+    <div class="filter-label">Filtr LDAP wysłany do serwera ({{ result.mode }}):</div>
+    <pre class="filter">{{ result.filter_used }}</pre>
+
+    {% set tree = explain_filter(result.filter_used) %}
+    {% if tree %}
+      <details>
+        <summary>Jak serwer rozumie ten filtr</summary>
+        <pre class="tree">{{ tree }}</pre>
+      </details>
+    {% endif %}
+
+    {% if result.base %}<div class="base">Zasięg wyszukiwania: {{ result.base }}</div>{% endif %}
+
+    <p class="msg {{ 'ok' if result.ok else 'err' }}">{{ result.message }}</p>
+
+    {% if result.entries %}
+      {{ render_entries(result.entries) }}
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
+{% macro render_entries(entries) %}
+  {% for e in entries %}
+    <div class="entry">
+      <div class="dn">{{ e.dn }}</div>
+      {% if e.flag %}<div class="flag">{{ e.flag }}</div>{% endif %}
+      <table>
+        {% for name, values in e.attributes %}
+          <tr>
+            <th>{{ name }}</th>
+            <td>
+              {% for v in values %}
+                {% if v.startswith('FLAG{') %}<span class="flag-inline">{{ v }}</span>
+                {% else %}{{ v }}{% endif %}{% if not loop.last %}<br>{% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endfor %}
+{% endmacro %}

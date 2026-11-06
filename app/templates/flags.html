@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sprawdź flagę{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Sprawdź flagę</h2>
+    <p>Wklej zdobytą flagę w formacie <code>FLAG{...}</code>, aby potwierdzić rozwiązanie zadania.</p>
+    <form method="post" action="{{ url_for('main.flags') }}">
+      <label for="flag">Flaga</label>
+      <input type="text" id="flag" name="flag" autofocus autocomplete="off" value="{{ value }}">
+      <button class="btn" type="submit">Sprawdź</button>
+    </form>
+
+    {% if checked %}
+      {% if checked.valid %}
+        <p class="msg ok">Flaga poprawna. Rozwiązane: {{ checked.title }}</p>
+      {% else %}
+        <p class="msg err">To nie jest prawidłowa flaga.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

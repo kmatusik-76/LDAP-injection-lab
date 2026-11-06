@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_result with context %}
+{% block title %}Konsola LDAP{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Konsola LDAP (piaskownica)</h2>
+    <p>
+      Wpisz dowolny filtr LDAP, a serwer zwróci pasujące wpisy. Konsola pyta
+      wyłącznie poddrzewo <code>ou=sandbox,dc=example,dc=com</code>, w którym
+      nie ma żadnych flag. To bezpieczne miejsce, żeby poznać składnię, zanim
+      zastosujesz ją w zadaniach.
+    </p>
+    <form method="get" action="{{ url_for('main.console') }}">
+      <label for="filter">Filtr LDAP</label>
+      <input type="text" id="filter" name="filter" autofocus autocomplete="off"
+             value="{{ ldap_filter }}" placeholder="(objectClass=*)">
+      <button class="btn" type="submit">Wyślij</button>
+    </form>
+    <details>
+      <summary>Przykłady filtrów</summary>
+      <ul class="examples">
+        <li><code>(objectClass=*)</code> - wszystkie wpisy</li>
+        <li><code>(cn=Alicja*)</code> - cn zaczynające się od "Alicja"</li>
+        <li><code>(&amp;(departmentNumber=QA)(employeeType=public))</code> - z działu QA i publiczni</li>
+        <li><code>(|(uid=test1)(uid=test3))</code> - jeden lub drugi login</li>
+        <li><code>(!(employeeType=public))</code> - wszyscy poza publicznymi</li>
+      </ul>
+    </details>
+  </div>
+
+  {% if result %}
+    {{ render_result(result) }}
+  {% endif %}
+{% endblock %}

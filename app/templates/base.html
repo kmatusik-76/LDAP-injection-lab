@@ -3,27 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Lab LDAP injection{% endblock %}</title>
+  <title>{% block title %}Laboratorium LDAP injection{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <div class="bar {{ 'safe' if secure_mode else 'vuln' }}">
-    <span class="mode-tag"><span class="dot"></span>
-      Tryb: {{ 'BEZPIECZNY — escape + bind + autoryzacja' if secure_mode
-               else 'PODATNY — konkatenacja stringow' }}</span>
+    <span class="mode">
+      Tryb: <strong>{{ 'BEZPIECZNY' if secure_mode else 'PODATNY' }}</strong>
+      {{ '(escapowanie + bind + autoryzacja)' if secure_mode else '(konkatenacja danych wejściowych)' }}
+    </span>
     <form method="post" action="{{ url_for('main.toggle') }}">
-      <button type="submit">Przelacz na {{ 'PODATNY' if secure_mode else 'BEZPIECZNY' }}</button>
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button type="submit">Przełącz na {{ 'PODATNY' if secure_mode else 'BEZPIECZNY' }}</button>
     </form>
-    <span class="spacer"></span>
-    {% if current_user %}
-      <span class="who">Zalogowany: {{ current_user.uid or current_user.dn }}</span>
-      <form method="post" action="{{ url_for('main.logout') }}"><button type="submit">Wyloguj</button></form>
-    {% endif %}
   </div>
+
   <nav>
-    <a href="{{ url_for('main.login') }}">Logowanie</a>
-    <a href="{{ url_for('main.search') }}">Wyszukiwarka pracownikow</a>
+    <a href="{{ url_for('main.index') }}">Start</a>
+    {% for s in scenarios %}
+      <a href="{{ url_for(s.endpoint) }}">{{ s.nav_label }}</a>
+    {% endfor %}
+    <a href="{{ url_for('main.console') }}">Konsola LDAP</a>
+    <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>
   </nav>
+
   <main>
     {% block content %}{% endblock %}
   </main>

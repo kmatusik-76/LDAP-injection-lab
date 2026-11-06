@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Start - Laboratorium LDAP injection{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1>Laboratorium LDAP injection</h1>
+    <p>
+      Aplikacja startuje w trybie <strong>PODATNY</strong> (czerwony pasek u góry).
+      W tym trybie wykonaj zadania i zdobądź flagi. Następnie przełącz na
+      <strong>BEZPIECZNY</strong> (zielony pasek) i sprawdź, że te same ataki
+      już nie działają. To jest właśnie sedno całego ćwiczenia.
+    </p>
+    <p>
+      Pod każdym formularzem widać <strong>filtr LDAP wysłany do serwera</strong>
+      i sekcję, która pokazuje, jak serwer ten filtr rozumie. Zaglądaj tam po
+      każdej próbie, bo najlepiej widać wtedy, co dokładnie zmieniło się
+      w zapytaniu. Jeśli chcesz najpierw oswoić się ze składnią filtrów, otwórz
+      <a href="{{ url_for('main.console') }}">Konsolę LDAP</a> i poćwicz na danych
+      z piaskownicy (tam nie ma flag).
+    </p>
+    <p>
+      Flagi mają format <code>FLAG{...}</code>. Każdą z nich możesz potwierdzić
+      na stronie <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Zadania</h2>
+    {% for s in scenarios %}
+      <div class="scenario">
+        <h3><a href="{{ url_for(s.endpoint) }}">{{ s.title }}</a></h3>
+        <p class="meta">Trudność: {{ s.difficulty }} &middot; Czas: {{ s.time }}</p>
+        <p>{{ s.goal | inline_code }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>Po wykonaniu zadań</h2>
+    <p>
+      Kliknij <strong>Przełącz na BEZPIECZNY</strong> w górnym pasku i powtórz
+      wszystkie ataki. Na stronie każdego zadania, w sekcji
+      <em>Co zmienia tryb BEZPIECZNY</em>, znajdziesz wyjaśnienie, dlaczego
+      atak przestał działać.
+    </p>
+  </div>
+{% endblock %}

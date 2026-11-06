@@ -1,3 +1,18 @@
+# Dane katalogu dla laboratorium LDAP injection.
+#
+# To celowo podatne srodowisko dydaktyczne. Rekordy sa podzielone na poddrzewa,
+# zeby kazde zadanie mialo wlasny zasieg:
+#
+#   dc=example,dc=com                root organizacji
+#     uid=admin,...                  konto administratora (Zadanie 1)
+#     cn=svc-webapp,...              konto serwisowe aplikacji
+#     ou=people,...                  pracownicy (Zadanie 2 i 4)
+#     ou=assets,...                  zasoby/urzadzenia (Zadanie 3)
+#     ou=sandbox,...                 piaskownica konsoli (bez flag)
+#
+# Flagi maja format FLAG{...} i sa ukryte w atrybutach rekordow, do ktorych
+# zwykly uzytkownik nie powinien miec dostepu.
+
 dn: dc=example,dc=com
 objectClass: top
 objectClass: dcObject
@@ -5,6 +20,7 @@ objectClass: organization
 dc: example
 o: Example Sp. z o.o.
 
+# --- Administrator: cel Zadania 1 (obejscie logowania) ---
 dn: uid=admin,dc=example,dc=com
 objectClass: top
 objectClass: person
@@ -17,9 +33,10 @@ mail: admin@example.com
 title: Administrator
 departmentNumber: IT
 employeeType: restricted
-description: FLAG{ldapi_login_bypass_admin}
-userPassword: nieDoZgadniecia-7Qx9-Lm2v-Rt4k
+description: FLAG{ldap_login_bypass_wildcard}
+userPassword: 7Qx9-Lm2v-Rt4k-NieDoZgadniecia
 
+# --- Konto serwisowe aplikacji (uzywane wewnetrznie do wyszukiwania) ---
 dn: cn=svc-webapp,dc=example,dc=com
 objectClass: top
 objectClass: organizationalRole
@@ -33,6 +50,7 @@ objectClass: top
 objectClass: organizationalUnit
 ou: people
 
+# --- Pracownicy publiczni (widoczni w ksiazce adresowej) ---
 dn: uid=jkowalski,ou=people,dc=example,dc=com
 objectClass: top
 objectClass: person
@@ -108,6 +126,7 @@ employeeType: public
 telephoneNumber: +48 500 000 105
 userPassword: Kaminski-Lab-105
 
+# --- Pracownicy niepubliczni (restricted): cel Zadania 2 ---
 dn: uid=elewandowska,ou=people,dc=example,dc=com
 objectClass: top
 objectClass: person
@@ -122,7 +141,6 @@ departmentNumber: Zarzad
 employeeType: restricted
 telephoneNumber: +48 500 000 901
 description: Numer prywatny, nie publikowac w ksiazce adresowej
-userPassword: Lewandowska-Lab-901
 
 dn: uid=kdabrowski,ou=people,dc=example,dc=com
 objectClass: top
@@ -137,5 +155,99 @@ title: Oficer bezpieczenstwa
 departmentNumber: Bezpieczenstwo
 employeeType: restricted
 telephoneNumber: +48 500 000 902
-description: FLAG{ldapi_wildcard_directory_leak}
-userPassword: Dabrowski-Lab-902
+description: FLAG{ldap_wildcard_directory_dump}
+
+# --- Konto z PIN-em do odzyskiwania: cel Zadania 4 (blind) ---
+dn: uid=aczarnecki,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: aczarnecki
+cn: Adam Czarnecki
+sn: Czarnecki
+mail: aczarnecki@example.com
+title: Dyrektor finansowy
+departmentNumber: Zarzad
+employeeType: restricted
+telephoneNumber: +48 500 000 903
+recoveryPin: 7429
+recoveryFlag: FLAG{ldap_blind_pin_extraction}
+description: Numer prywatny, nie publikowac w ksiazce adresowej
+
+dn: ou=assets,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: assets
+
+# --- Zasoby publiczne (maja cn i ou, wiec widac je zwyklym wyszukiwaniem) ---
+dn: cn=drukarka-hr,ou=assets,dc=example,dc=com
+objectClass: top
+objectClass: device
+cn: drukarka-hr
+ou: assets
+description: Drukarka sieciowa w dziale HR
+serialNumber: PRN-2201
+
+dn: cn=serwer-vpn,ou=assets,dc=example,dc=com
+objectClass: top
+objectClass: device
+cn: serwer-vpn
+ou: assets
+description: Brama VPN dla pracownikow zdalnych
+serialNumber: VPN-0042
+
+# --- Zasob ukryty: cel Zadania 3 (brak cn i ou, trzeba wstrzyknac warunek) ---
+dn: serialNumber=KEY-7731,ou=assets,dc=example,dc=com
+objectClass: top
+objectClass: device
+serialNumber: KEY-7731
+description: FLAG{ldap_or_attribute_injection}
+
+dn: ou=sandbox,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: sandbox
+
+# --- Piaskownica konsoli: dane do cwiczenia skladni filtrow, bez flag ---
+dn: uid=test1,ou=sandbox,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: test1
+cn: Alicja Testowa
+sn: Testowa
+mail: alicja@sandbox.example.com
+title: Tester
+departmentNumber: QA
+employeeType: public
+telephoneNumber: +48 600 000 001
+
+dn: uid=test2,ou=sandbox,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: test2
+cn: Bartek Przykladowy
+sn: Przykladowy
+mail: bartek@sandbox.example.com
+title: Analityk
+departmentNumber: QA
+employeeType: public
+telephoneNumber: +48 600 000 002
+
+dn: uid=test3,ou=sandbox,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: test3
+cn: Celina Wzorcowa
+sn: Wzorcowa
+mail: celina@sandbox.example.com
+title: Kierowniczka QA
+departmentNumber: QA
+employeeType: restricted
+telephoneNumber: +48 600 000 003

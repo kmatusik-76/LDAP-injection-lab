@@ -1,36 +1,63 @@
 # Laboratorium LDAP injection
 
-Celowo podatna aplikacja webowa do nauki **LDAP injection**. Projekt edukacyjny
-(white-box) — kod jest jawny, a celem jest zrozumienie, *dlaczego* atak działa
-i jak go naprawić.
+Celowo podatna aplikacja webowa do nauki o wstrzykiwaniu zapytań LDAP. Całość
+działa lokalnie - wbudowany serwer katalogu pracuje w pamięci, więc nie trzeba
+niczego instalować poza Pythonem.
 
-Aplikacja ma dwa ekrany — **logowanie** i **wyszukiwarkę pracowników** — oraz
-przełącznik **PODATNY / BEZPIECZNY** w górnym banerze. Ten sam formularz w trybie
-podatnym da się zaatakować, a w bezpiecznym nie. Na każdym ekranie pokazywany jest
-**dokładny filtr LDAP** wysłany do serwera, żeby było widać różnicę.
+Opisy zadań i instrukcja dla uczestnika są dostępne bezpośrednio w aplikacji.
 
-> ⚠️ **Tylko do nauki.** Kod zawiera świadome luki (konkatenacja wejścia do
-> filtra LDAP, hasła jawnym tekstem, brak filtra autoryzacji). Nigdy nie używaj
-> takich wzorców w produkcji.
 
-## Uruchomienie 
+## Wymagania
 
-Wymagany tylko **Python 3.9+**. Serwer LDAP działa w pamięci (`ldap3` w trybie
-`MOCK_SYNC`), dane ładowane są z [`data/seed.ldif`](data/seed.ldif) — nie trzeba
-niczego instalować poza zależnościami z `requirements.txt`.
+- Python 3.10 lub nowszy
+- Flask (jedyna zależność do uruchomienia; pytest służy do testów)
+
+## Instalacja
 
 ```bash
 git clone <adres-repo>
-cd ldap-injection-lab
+cd LDAP-injection-lab
 
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Linux / macOS:
-source venv/bin/activate
+python -m venv .venv
+```
 
+Aktywacja środowiska wirtualnego:
+
+```bash
+# Linux / macOS
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+```
+
+Następnie zainstaluj zależności:
+
+```bash
 pip install -r requirements.txt
+```
+
+## Uruchomienie
+
+```bash
 python run.py
 ```
 
-Otwórz **http://127.0.0.1:5000**.
+Aplikacja nasłuchuje na **http://127.0.0.1:5000** - otwórz ten adres
+w przeglądarce.
+
+Zatrzymanie: `Ctrl+C`.
+
+
+## Struktura projektu
+
+```
+app/ldap_filter.py    parser i ewaluator filtrów LDAP
+app/directory.py      model wpisów katalogu i wczytywanie pliku LDIF
+app/ldap_server.py    serwer katalogu w pamięci: search() i bind()
+app/services.py       budowanie filtrów - dwie wersje: bezpieczna i podatna na wstrzyknięcia
+app/routes.py         warstwa webowa (Flask)
+app/templates/        widoki
+data/seed.ldif        dane katalogu wraz z ukrytymi flagami
+tests/                testy silnika filtrów i scenariuszy zadań
+```

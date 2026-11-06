@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_result with context %}
+{% block title %}{{ scenario.title }}{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>{{ scenario.title }}</h2>
+    <p class="meta">Trudność: {{ scenario.difficulty }} &middot; Czas: {{ scenario.time }}</p>
+    <p><strong>Cel:</strong> {{ scenario.goal | inline_code }}</p>
+    <p><strong>Dowód wykonania:</strong> {{ scenario.proof | inline_code }}</p>
+
+    <details>
+      <summary>Na czym polega luka</summary>
+      <p>{{ scenario.vulnerability | inline_code }}</p>
+    </details>
+    {% for hint in scenario.hints %}
+      <details>
+        <summary>Podpowiedź{% if scenario.hints | length > 1 %} {{ loop.index }}{% endif %}</summary>
+        <p>{{ hint | inline_code }}</p>
+      </details>
+    {% endfor %}
+    <details{% if secure_mode %} open{% endif %}>
+      <summary>Co zmienia tryb BEZPIECZNY</summary>
+      <p>{{ scenario.secure_note | inline_code }}</p>
+    </details>
+  </div>
+
+  <div class="card">
+    {% include template_name %}
+  </div>
+
+  {% if result %}
+    {{ render_result(result) }}
+  {% endif %}
+{% endblock %}

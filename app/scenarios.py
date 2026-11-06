@@ -84,12 +84,11 @@ SCENARIOS: list[Scenario] = [
                       "ukryty rekord nie ma `cn` ani `ou`, sama gwiazdka go nie "
                       "znajdzie.",
         hints=(
-            "Zamknij nawias wartości i dopisz własny warunek na inny atrybut, na "
-            "przykład `description` albo `serialNumber`. Musi się on zmieścić "
-            "wewnątrz istniejącego nawiasu `OR`, inaczej serwer odrzuci całe "
-            "zapytanie.",
-            "Spróbuj wpisać w pole wyszukiwania coś w rodzaju `x)(description=*`. "
-            "Zanim zgadniesz, dlaczego to działa, obejrzyj, jak zmienił się filtr.",
+            "Twój tekst trafia w miejsce `FRAZA` w `(cn=FRAZA)`. Zastanów się, co "
+            "się stanie, jeśli w środku wpiszesz `)` — domkniesz warunek `cn` "
+            "wcześniej, niż chciał programista, i zrobisz sobie miejsce na własny "
+            "`(atrybut=*)`. Po każdej próbie sprawdzaj podgląd filtra i pilnuj, "
+            "żeby nawiasy się zgadzały.",
         ),
         secure_note="Escapowanie zamyka drogę do wstrzyknięcia nawiasu, "
                     "a dodatkowy warunek `objectClass=device` trzyma wyniki "

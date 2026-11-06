@@ -136,17 +136,6 @@ def recovery():
     )
 
 
-@bp.route("/console")
-def console():
-    ldap_filter = request.args.get("filter")
-    result = app_logic().console_query(ldap_filter) if ldap_filter else None
-    return render_template(
-        "console.html",
-        result=result,
-        ldap_filter=ldap_filter or "",
-    )
-
-
 @bp.route("/flags", methods=["GET", "POST"])
 def flags():
     checked = None

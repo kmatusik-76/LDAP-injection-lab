@@ -18,14 +18,12 @@ from .ldap_server import ROOT_DN, SUBTREE, MockLdapServer
 
 PEOPLE_DN = "ou=people,dc=example,dc=com"
 ASSETS_DN = "ou=assets,dc=example,dc=com"
-SANDBOX_DN = "ou=sandbox,dc=example,dc=com"
 
 # Etykiety trybu pokazywane w interfejsie.
 VULNERABLE = "PODATNY"
 SECURE = "BEZPIECZNY"
-CONSOLE = "KONSOLA"
 
-# Atrybuty pokazywane w tabelach wyników (poza konsolą, która pokazuje wszystko).
+# Atrybuty pokazywane w tabelach wyników.
 SHOWN_ATTRS = [
     "uid", "cn", "sn", "mail", "title", "departmentNumber",
     "telephoneNumber", "employeeType", "serialNumber", "description",
@@ -35,19 +33,16 @@ SHOWN_ATTRS = [
 @dataclass
 class Result:
     ok: bool
-    mode: str                       # VULNERABLE, SECURE albo CONSOLE
+    mode: str                       # VULNERABLE albo SECURE
     filter_used: str | None = None
     base: str | None = None
     entries: list[dict] = field(default_factory=list)
     message: str = ""
 
 
-def _entry_to_dict(entry, attrs: list[str] | None = None) -> dict:
+def _entry_to_dict(entry, attrs: list[str]) -> dict:
     """Spłaszcza wpis do słownika wygodnego dla szablonu."""
-    if attrs is None:
-        pairs = list(entry.attributes)
-    else:
-        pairs = [(a, entry.get(a)) for a in attrs if entry.get(a)]
+    pairs = [(a, entry.get(a)) for a in attrs if entry.get(a)]
     flag = None
     for _, values in pairs:
         for v in values:
@@ -178,19 +173,6 @@ class LdapApp:
             return self._rejected(ldap_filter, PEOPLE_DN, SECURE, exc)
         return Result(True, SECURE, ldap_filter, PEOPLE_DN,
                       message="Jeśli dane są poprawne, wyślemy instrukcje na e-mail.")
-
-    # --- Konsola: piaskownica do ćwiczenia składni filtrów ----------------
-
-    def console_query(self, ldap_filter: str) -> Result:
-        # Konsola odpytuje wyłącznie poddrzewo piaskownicy (bez flag), żeby
-        # można było swobodnie ćwiczyć składnię filtrów.
-        try:
-            found = self.server.search(SANDBOX_DN, ldap_filter, SUBTREE)
-        except FilterError as exc:
-            return self._rejected(ldap_filter, SANDBOX_DN, CONSOLE, exc)
-        return Result(True, CONSOLE, ldap_filter, SANDBOX_DN,
-                      entries=[_entry_to_dict(e) for e in found],
-                      message=f"Znaleziono wpisów: {len(found)}")
 
     # --- Wspólny wykonawca wyszukiwania -----------------------------------
 

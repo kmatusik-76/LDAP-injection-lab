@@ -89,7 +89,7 @@ dc=example,dc=com                      # korzeń organizacji (Example Sp. z o.o.
 │   ├── uid=mzielinska                 # Maria Zielinska
 │   ├── uid=tkaminski                  # Tomasz Kaminski
 │   ├── uid=elewandowska               # Ewa Lewandowska
-│   ├── uid=kdabrowski                 # Krzysztof Dabrowski
+│   ├── uid=dwojcik                    # Dawid Wojcik
 │   └── uid=aczarnecki                 # Adam Czarnecki
 │
 └── ou=assets                          # zasoby / urządzenia sieciowe

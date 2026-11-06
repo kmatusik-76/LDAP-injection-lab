@@ -6,7 +6,7 @@
     <h2>{{ scenario.title }}</h2>
     <p class="meta">Trudność: {{ scenario.difficulty }}</p>
     <p><strong>Cel:</strong> {{ scenario.goal | inline_code }}</p>
-    <p><strong>Dowód wykonania:</strong> {{ scenario.proof | inline_code }}</p>
+    <p>{{ scenario.proof | inline_code }}</p>
 
     <details>
       <summary>Na czym polega luka</summary>
@@ -18,10 +18,12 @@
         <p>{{ hint | inline_code }}</p>
       </details>
     {% endfor %}
-    <details{% if secure_mode %} open{% endif %}>
-      <summary>Co zmienia tryb BEZPIECZNY</summary>
-      <p>{{ scenario.secure_note | inline_code }}</p>
-    </details>
+    {% if secure_mode %}
+      <details open>
+        <summary>Co zmienia tryb BEZPIECZNY</summary>
+        <p>{{ scenario.secure_note | inline_code }}</p>
+      </details>
+    {% endif %}
   </div>
 
   <div class="card">

@@ -15,9 +15,20 @@ def client():
 def test_task_page_shows_full_description(client, scenario):
     html = client.get(f"/{scenario.endpoint.split('.')[1]}").get_data(as_text=True)
     assert scenario.title in html
-    for label in ("Cel:", "Dowód wykonania:", "Na czym polega luka",
-                  "Podpowiedź", "Co zmienia tryb BEZPIECZNY"):
+    for label in ("Cel:", "Na czym polega luka", "Podpowiedź"):
         assert label in html
+
+
+@pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda s: s.id)
+def test_secure_note_only_in_secure_mode(client, scenario):
+    url = f"/{scenario.endpoint.split('.')[1]}"
+    # Domyślnie aplikacja jest w trybie PODATNY - sekcji nie ma.
+    html = client.get(url).get_data(as_text=True)
+    assert "Co zmienia tryb BEZPIECZNY" not in html
+
+    client.post("/toggle", data={"next": url})
+    html = client.get(url).get_data(as_text=True)
+    assert "Co zmienia tryb BEZPIECZNY" in html
 
 
 def test_index_lists_all_tasks(client):

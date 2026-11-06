@@ -1,5 +1,4 @@
-// Konfetti po ukończeniu wszystkich zadań. Bez zewnętrznych bibliotek,
-// żeby lab działał w pełni offline. Rysuje na płótnie nad stroną
+// Konfetti po ukończeniu wszystkich zadań. Rysuje na płótnie nad stroną
 // (bez blokowania kliknięć) i po kilku sekundach samo się usuwa.
 (function () {
   "use strict";

@@ -43,7 +43,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Aplikacja nasłuchuje na **http://127.0.0.1:5000** — otwórz ten adres
+Aplikacja nasłuchuje na **http://127.0.0.1:5000** - otwórz ten adres
 w przeglądarce.
 
 Zatrzymanie: `Ctrl+C`.
@@ -52,10 +52,10 @@ Zatrzymanie: `Ctrl+C`.
 ## Struktura projektu
 
 ```
-app/ldap_filter.py    parser i ewaluator filtrów LDAP (podzbiór RFC 4515)
+app/ldap_filter.py    parser i ewaluator filtrów LDAP
 app/directory.py      model wpisów katalogu i wczytywanie pliku LDIF
 app/ldap_server.py    serwer katalogu w pamięci: search() i bind()
-app/services.py       budowanie filtrów - wersja podatna i bezpieczna
+app/services.py       budowanie filtrów - dwie wersje: bezpieczna i podatna na wstrzyknięcia
 app/routes.py         warstwa webowa (Flask)
 app/templates/        widoki
 data/seed.ldif        dane katalogu wraz z ukrytymi flagami

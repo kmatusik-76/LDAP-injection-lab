@@ -25,11 +25,6 @@ których zwykłe wyszukiwanie nie pokazuje (m.in. zarząd i oficer bezpieczeńst
 
 Ekran: **Wyszukiwarka pracowników**.
 
-Co warto wiedzieć:
-- Wyszukiwarka to „książka adresowa" — normalnie wpisujesz fragment nazwiska.
-- W trybie podatnym Twój tekst trafia wprost do filtra i **nie ma** żadnego
-  ograniczenia „tylko publiczni".
-- Spróbuj wpisać coś, co pasuje do *wszystkich* wpisów naraz.
 
 **Dowód wykonania:** wśród wyników pojawi się konto `restricted` z flagą
 `FLAG{...}` w kolumnie `description`, a także prywatne numery telefonów, które

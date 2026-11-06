@@ -8,7 +8,6 @@
 #     cn=svc-webapp,...              konto serwisowe aplikacji
 #     ou=people,...                  pracownicy (Zadanie 2 i 4)
 #     ou=assets,...                  zasoby/urzadzenia (Zadanie 3)
-#     ou=sandbox,...                 piaskownica konsoli (bez flag)
 #
 # Flagi maja format FLAG{...} i sa ukryte w atrybutach rekordow, do ktorych
 # zwykly uzytkownik nie powinien miec dostepu.
@@ -203,51 +202,3 @@ objectClass: top
 objectClass: device
 serialNumber: KEY-7731
 description: FLAG{ldap_or_attribute_injection}
-
-dn: ou=sandbox,dc=example,dc=com
-objectClass: top
-objectClass: organizationalUnit
-ou: sandbox
-
-# --- Piaskownica konsoli: dane do cwiczenia skladni filtrow, bez flag ---
-dn: uid=test1,ou=sandbox,dc=example,dc=com
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-uid: test1
-cn: Alicja Testowa
-sn: Testowa
-mail: alicja@sandbox.example.com
-title: Tester
-departmentNumber: QA
-employeeType: public
-telephoneNumber: +48 600 000 001
-
-dn: uid=test2,ou=sandbox,dc=example,dc=com
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-uid: test2
-cn: Bartek Przykladowy
-sn: Przykladowy
-mail: bartek@sandbox.example.com
-title: Analityk
-departmentNumber: QA
-employeeType: public
-telephoneNumber: +48 600 000 002
-
-dn: uid=test3,ou=sandbox,dc=example,dc=com
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-uid: test3
-cn: Celina Wzorcowa
-sn: Wzorcowa
-mail: celina@sandbox.example.com
-title: Kierowniczka QA
-departmentNumber: QA
-employeeType: restricted
-telephoneNumber: +48 600 000 003

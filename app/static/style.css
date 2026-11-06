@@ -136,4 +136,3 @@ input[type=text], input[type=password] {
 details { margin-top: .6rem; }
 summary { cursor: pointer; font-weight: 600; }
 code { background: #eef0f3; padding: .1rem .3rem; border-radius: 3px; }
-.examples { font-family: ui-monospace, monospace; font-size: .85rem; }

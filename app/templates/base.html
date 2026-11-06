@@ -23,7 +23,6 @@
     {% for s in scenarios %}
       <a href="{{ url_for(s.endpoint) }}">{{ s.nav_label }}</a>
     {% endfor %}
-    <a href="{{ url_for('main.console') }}">Konsola LDAP</a>
     <a href="{{ url_for('main.flags') }}">Sprawdź flagę</a>
   </nav>
 

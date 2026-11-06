@@ -52,12 +52,21 @@ Zatrzymanie: `Ctrl+C`.
 ## Struktura projektu
 
 ```
-app/ldap_filter.py    parser i ewaluator filtrów LDAP
-app/directory.py      model wpisów katalogu i wczytywanie pliku LDIF
-app/ldap_server.py    serwer katalogu w pamięci: search() i bind()
-app/services.py       budowanie filtrów - dwie wersje: bezpieczna i podatna na wstrzyknięcia
-app/routes.py         warstwa webowa (Flask)
-app/templates/        widoki
-data/seed.ldif        dane katalogu wraz z ukrytymi flagami
-tests/                testy silnika filtrów i scenariuszy zadań
+LDAP-injection-lab/
+├── run.py                  # punkt startowy – uruchamia serwer Flask
+├── requirements.txt        # zależności (Flask, pytest)
+├── data/
+│   └── seed.ldif           # dane katalogu LDAP 
+├── app/
+│   ├── __init__.py         # fabryka aplikacji Flask
+│   ├── routes.py           # warstwa webowa – adresy URL i obsługa formularzy
+│   ├── services.py         # budowanie filtrów: wersja PODATNA vs BEZPIECZNA
+│   ├── ldap_server.py      # serwer katalogu w pamięci: search() i bind()
+│   ├── ldap_filter.py      # parser i ewaluator filtrów LDAP (serce labu)
+│   ├── directory.py        # model wpisów + wczytywanie pliku LDIF
+│   ├── scenarios.py        # opisy 4 zadań 
+│   ├── static/
+│   │   └── style.css       # style
+│   └── templates/          # widoki HTML (Jinja2)
+└── tests/                  # testy silnika filtrów i scenariuszy
 ```

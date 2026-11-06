@@ -12,16 +12,15 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Scenario:
     id: str
-    endpoint: str           # nazwa trasy Flaska
-    nav_label: str          # krótka nazwa ekranu w menu
+    endpoint: str           
+    nav_label: str          
     title: str
     difficulty: str
-    time: str
-    goal: str               # co trzeba zrobić
-    proof: str              # po czym poznać, że się udało
-    vulnerability: str      # na czym polega luka
-    hints: tuple[str, ...]  # podpowiedzi odsłaniane po kolei
-    secure_note: str        # co zmienia tryb BEZPIECZNY
+    goal: str              
+    proof: str             
+    vulnerability: str      
+    hints: tuple[str, ...]  
+    secure_note: str       
     flag: str
 
 
@@ -32,7 +31,6 @@ SCENARIOS: list[Scenario] = [
         nav_label="Zadanie 1: logowanie",
         title="Zadanie 1: obejście logowania",
         difficulty="łatwe",
-        time="około 10 min",
         goal="Zaloguj się na konto `admin`, nie znając jego hasła.",
         proof="Po zalogowaniu zobaczysz dane konta administratora, a w polu "
               "`description` jego flagę.",
@@ -54,7 +52,6 @@ SCENARIOS: list[Scenario] = [
         nav_label="Zadanie 2: pracownicy",
         title="Zadanie 2: wyciek książki adresowej",
         difficulty="łatwe",
-        time="około 10 min",
         goal="Wyświetl pracowników oznaczonych jako niepubliczni (`restricted`), "
              "których wyszukiwarka normalnie ukrywa. Są wśród nich osoby "
              "z zarządu i z działu bezpieczeństwa.",
@@ -78,10 +75,10 @@ SCENARIOS: list[Scenario] = [
         nav_label="Zadanie 3: zasoby",
         title="Zadanie 3: wstrzyknięcie własnego warunku",
         difficulty="średnie",
-        time="około 15 min",
-        goal="W katalogu zasobów jest rekord, który nie ma ani nazwy (`cn`), ani "
-             "działu (`ou`), więc zwykłe wyszukiwanie nigdy go nie zwróci. "
-             "Odczytaj flagę z jego pola `description`.",
+        goal="W katalogu zasobów jest ukryty rekord z flagą. Nie ma on nazwy "
+             "(`cn`) ani działu (`ou`), więc wpisanie czegokolwiek w wyszukiwarkę "
+             "go nie znajdzie. Twoim zadaniem jest tak zmanipulować zapytanie, "
+             "żeby wyszukiwarka zwróciła ten rekord.",
         proof="W wynikach pojawi się zasób z flagą, choć nie podałeś jego nazwy.",
         vulnerability="Wyszukiwarka skleja filtr `(|(cn=FRAZA)(ou=FRAZA))`. Skoro "
                       "ukryty rekord nie ma `cn` ani `ou`, sama gwiazdka go nie "
@@ -105,17 +102,18 @@ SCENARIOS: list[Scenario] = [
         nav_label="Zadanie 4: odzyskiwanie",
         title="Zadanie 4: odczyt na ślepo (blind)",
         difficulty="trudne",
-        time="około 15 min",
-        goal="Formularz odzyskiwania konta zdradza tylko tyle, czy konto "
-             "o podanym PIN-ie istnieje, i nie pokazuje żadnych danych. Odtwórz "
-             "czterocyfrowy PIN konta `aczarnecki`, a następnie wpisz go "
-             "w całości, żeby odsłonić flagę.",
+        goal="Formularz odzyskiwania konta mówi tylko „konto istnieje” albo "
+             "„nie istnieje” – nigdy nie pokazuje PIN-u. Mimo to da się ten "
+             "4-cyfrowy PIN konta `aczarnecki` odgadnąć cyfra po cyfrze. "
+             "Gdy już go znasz, wpisz go w całości, żeby odsłonić flagę.",
         proof="Po wpisaniu pełnego, poprawnego PIN-u zobaczysz flagę w danych konta.",
-        vulnerability="Filtr ma postać `(&(uid=LOGIN)(recoveryPin=PIN))`, a PIN "
-                      "trafia do niego bez obróbki, więc działa dopasowanie "
-                      "fragmentu. To tak zwany odczyt na ślepo (blind): serwer "
-                      "zdradza tajną wartość pojedynczymi odpowiedziami "
-                      "„tak/nie”, choć nigdy jej nie wyświetla.",
+        vulnerability="Filtr to `(&(uid=LOGIN)(recoveryPin=PIN))`, a PIN trafia "
+                      "do niego bez obróbki – więc gwiazdka działa jak dopasowanie "
+                      "fragmentu. Wpisując `5*` pytasz serwer: „czy PIN zaczyna się "
+                      "od 5?”. Odpowiedź „konto istnieje / nie istnieje” zdradza Ci "
+                      "to po jednej cyfrze naraz. Tak właśnie wygląda atak „na "
+                      "ślepo” (blind): serwer wycieka tajną wartość przez samo "
+                      "tak/nie, choć nigdy jej nie wyświetla.",
         hints=(
             "Sprawdzaj PIN prefiksem: wpisuj `0*`, `1*`, `2*`... aż formularz "
             "potwierdzi, że konto istnieje. Tak poznasz pierwszą cyfrę.",

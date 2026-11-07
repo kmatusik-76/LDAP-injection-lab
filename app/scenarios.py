@@ -75,10 +75,8 @@ SCENARIOS: list[Scenario] = [
         title="Zadanie 3: wstrzyknięcie własnego warunku",
         difficulty="średnie",
         goal="W katalogu zasobów jest ukryty rekord z flagą. Nie ma on atrybutów "
-             "`cn` ani `ou`, więc wpisanie (`*`) w wyszukiwarkę go nie znajdzie. "
-             "To, że leży w gałęzi `ou=assets`, widać tylko w jego DN - położenie "
-             "w drzewie nie jest atrybutem wpisu, a filtr sprawdza wyłącznie "
-             "atrybuty. Twoim zadaniem jest tak zmanipulować zapytanie, żeby "
+             "`cn` ani `ou`. "
+             "Twoim zadaniem jest tak zmanipulować zapytanie, żeby "
              "wyszukiwarka zwróciła ten rekord.",
         proof="W wynikach pojawi się zasób z flagą, choć nie podałeś jego nazwy.",
         vulnerability="Wyszukiwarka skleja filtr `(|(cn=FRAZA)(ou=FRAZA))` używając wpisanej frazy "

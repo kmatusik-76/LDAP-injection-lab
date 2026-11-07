@@ -87,6 +87,22 @@ def test_assets_or_injection_reveals_hidden(app):
     assert "FLAG{ldap_or_attribute_injection}" in flags_in(r)
 
 
+def _dns(result):
+    return [e["dn"] for e in result.entries]
+
+
+def test_assets_results_exclude_container_entry(app):
+    # Kontener ou=assets ma atrybut ou, ale nie jest zasobem - nie liczymy go.
+    plain = app.asset_search("*", secure=False)
+    assert _dns(plain) == ["cn=drukarka-hr,ou=assets,dc=example,dc=com",
+                           "cn=serwer-vpn,ou=assets,dc=example,dc=com"]
+    assert plain.message == "Znaleziono wpisów: 2"
+
+    injected = app.asset_search("*)(description=*", secure=False)
+    assert "ou=assets,dc=example,dc=com" not in _dns(injected)
+    assert injected.message == "Znaleziono wpisów: 3"
+
+
 def test_assets_secure_blocks_injection(app):
     r = app.asset_search("x)(description=*", secure=True)
     assert "FLAG{ldap_or_attribute_injection}" not in flags_in(r)

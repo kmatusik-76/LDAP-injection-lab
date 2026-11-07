@@ -43,15 +43,9 @@ class Result:
 def _entry_to_dict(entry, attrs: list[str]) -> dict:
     """Spłaszcza wpis do słownika wygodnego dla szablonu."""
     pairs = [(a, entry.get(a)) for a in attrs if entry.get(a)]
-    flag = None
-    for _, values in pairs:
-        for v in values:
-            if v.startswith("FLAG{"):
-                flag = v
     return {
         "dn": entry.dn,
         "attributes": [(name, values) for name, values in pairs],
-        "flag": flag,
     }
 
 

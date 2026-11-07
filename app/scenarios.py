@@ -74,10 +74,10 @@ SCENARIOS: list[Scenario] = [
         nav_label="Zadanie 3: zasoby",
         title="Zadanie 3: wstrzyknięcie własnego warunku",
         difficulty="średnie",
-        goal="W katalogu zasobów jest ukryty rekord z flagą. Nie ma on nazwy "
-             "(`cn`) ani działu (`ou`), więc wpisanie (`*`) w wyszukiwarkę "
-             "go nie znajdzie. Twoim zadaniem jest tak zmanipulować zapytanie, "
-             "żeby wyszukiwarka zwróciła ten rekord.",
+        goal="W katalogu zasobów jest ukryty rekord z flagą. Nie ma on atrybutów "
+             "`cn` ani `ou`. "
+             "Twoim zadaniem jest tak zmanipulować zapytanie, żeby "
+             "wyszukiwarka zwróciła ten rekord.",
         proof="W wynikach pojawi się zasób z flagą, choć nie podałeś jego nazwy.",
         vulnerability="Wyszukiwarka skleja filtr `(|(cn=FRAZA)(ou=FRAZA))` używając wpisanej frazy "
                       "w takiej postaci, w jakiej ją podasz. ",

@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .ldap_filter import FilterError, escape_filter_chars
-from .ldap_server import ROOT_DN, SUBTREE, MockLdapServer
+from .ldap_server import ONELEVEL, ROOT_DN, SUBTREE, MockLdapServer
 
 PEOPLE_DN = "ou=people,dc=example,dc=com"
 ASSETS_DN = "ou=assets,dc=example,dc=com"
@@ -25,7 +25,7 @@ SECURE = "BEZPIECZNY"
 
 # Atrybuty pokazywane w tabelach wyników.
 SHOWN_ATTRS = [
-    "uid", "cn", "sn", "mail", "title", "departmentNumber",
+    "uid", "cn", "ou", "sn", "mail", "title", "departmentNumber",
     "telephoneNumber", "employeeType", "serialNumber", "description",
 ]
 
@@ -123,12 +123,13 @@ class LdapApp:
     def _asset_vulnerable(self, query: str) -> Result:
         # Podatność: fraza wklejona do filtra pozwala dopisać własny warunek.
         ldap_filter = f"(|(cn={query})(ou={query}))"
-        return self._run_search(ldap_filter, ASSETS_DN, VULNERABLE)
+        # Zasoby leżą bezpośrednio pod ou=assets - sam kontener nie jest zasobem.
+        return self._run_search(ldap_filter, ASSETS_DN, VULNERABLE, ONELEVEL)
 
     def _asset_secure(self, query: str) -> Result:
         q = escape_filter_chars(query)
         ldap_filter = f"(&(objectClass=device)(|(cn=*{q}*)(ou=*{q}*)))"
-        return self._run_search(ldap_filter, ASSETS_DN, SECURE)
+        return self._run_search(ldap_filter, ASSETS_DN, SECURE, ONELEVEL)
 
     # --- Zadanie 4: odzyskiwanie konta (blind) ----------------------------
 
@@ -170,9 +171,10 @@ class LdapApp:
 
     # --- Wspólny wykonawca wyszukiwania -----------------------------------
 
-    def _run_search(self, ldap_filter: str, base: str, mode: str) -> Result:
+    def _run_search(self, ldap_filter: str, base: str, mode: str,
+                    scope: str = SUBTREE) -> Result:
         try:
-            found = self.server.search(base, ldap_filter, SUBTREE)
+            found = self.server.search(base, ldap_filter, scope)
         except FilterError as exc:
             return self._rejected(ldap_filter, base, mode, exc)
         return Result(True, mode, ldap_filter, base,

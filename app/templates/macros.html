@@ -26,16 +26,12 @@
   {% for e in entries %}
     <div class="entry">
       <div class="dn">{{ e.dn }}</div>
-      {% if e.flag %}<div class="flag">{{ e.flag }}</div>{% endif %}
       <table>
         {% for name, values in e.attributes %}
           <tr>
             <th>{{ name }}</th>
             <td>
-              {% for v in values %}
-                {% if v.startswith('FLAG{') %}<span class="flag-inline">{{ v }}</span>
-                {% else %}{{ v }}{% endif %}{% if not loop.last %}<br>{% endif %}
-              {% endfor %}
+              {% for v in values %}{{ v }}{% if not loop.last %}<br>{% endif %}{% endfor %}
             </td>
           </tr>
         {% endfor %}
